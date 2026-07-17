@@ -13,7 +13,22 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
+        board: {
+          DEFAULT: "#29737a",
+          deep: "#1a5b61",
+          edge: "#12474e",
+        },
+        premium: {
+          tw: "#ef5b68",
+          dw: "#fce2e5",
+          tl: "#3d9bd8",
+          dl: "#dceefa",
+          star: "#f4b641",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -12,51 +12,51 @@
    * A different format will require also updating the theme in tailwind.config.ts.
   */
   :root {
-    --background: 220 13% 11%;
-    --foreground: 210 40% 98%;
-
-    --card: 220 12% 18%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 220 12% 18%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 260 85% 65%;
-    --primary-foreground: 220 13% 11%;
-
-    --secondary: 220 12% 25%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 220 12% 25%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 260 85% 65%;
-    --accent-foreground: 220 13% 11%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 220 12% 25%;
-    --input: 220 12% 25%;
-    --ring: 260 85% 65%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 220 13% 11%;
-
-    --sidebar-foreground: 210 40% 98%;
-
-    --sidebar-primary: 260 85% 65%;
-
-    --sidebar-primary-foreground: 220 13% 11%;
-
-    --sidebar-accent: 220 12% 25%;
-
-    --sidebar-accent-foreground: 210 40% 98%;
-
-    --sidebar-border: 220 12% 25%;
-
-    --sidebar-ring: 260 85% 65%;
+    --background: 210 33% 98%;
+    --foreground: 222 33% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 33% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 33% 12%;
+    --primary: 173 80% 29%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 25% 94%;
+    --secondary-foreground: 222 33% 18%;
+    --muted: 210 25% 94%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 38 92% 58%;
+    --accent-foreground: 222 33% 12%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 24% 88%;
+    --input: 214 24% 88%;
+    --ring: 173 80% 29%;
+    --radius: 0.75rem;
+    --sidebar-background: 222 33% 12%;
+    --sidebar-foreground: 210 25% 94%;
+    --sidebar-primary: 173 80% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 28% 18%;
+    --sidebar-accent-foreground: 210 25% 94%;
+    --sidebar-border: 222 22% 22%;
+    --sidebar-ring: 173 80% 38%;
+  }
+  .dark {
+    --background: 222 33% 9%;
+    --foreground: 210 25% 95%;
+    --card: 222 28% 14%;
+    --card-foreground: 210 25% 95%;
+    --popover: 222 28% 14%;
+    --popover-foreground: 210 25% 95%;
+    --secondary: 222 22% 20%;
+    --secondary-foreground: 210 25% 95%;
+    --muted: 222 22% 20%;
+    --muted-foreground: 215 16% 65%;
+    --border: 222 22% 24%;
+    --input: 222 22% 24%;
+    --sidebar-background: 222 36% 7%;
+    --sidebar-accent: 222 28% 15%;
+    --sidebar-border: 222 22% 19%;
   }
 }
 
@@ -67,7 +67,11 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: "Inter", sans-serif;
   }
+
+  button, a, input, select { transition: all 160ms ease; }
+  ::selection { background: hsl(var(--primary) / 0.18); }
 
   :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
     overflow-wrap: anywhere;
