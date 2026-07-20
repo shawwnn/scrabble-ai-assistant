@@ -36,6 +36,14 @@ export const suggestions = [
   { word: "LATER", score: 32, note: "Leaves good rack balance", usage: "5 of 7 tiles", start: [6, 6] as [number, number], direction: "across" as const },
 ];
 
+export const moveHistory = [
+  { id: "move-14", player: "JohnDoe", word: "WORDS", score: 32, time: "8 min ago", turn: 14, direction: "Across", position: "H8–L8", tiles: ["W", "O", "R", "D", "S"] },
+  { id: "move-13", player: "QwithU", word: "RELATE", score: 24, time: "14 min ago", turn: 13, direction: "Down", position: "H6–H11", tiles: ["R", "E", "L", "A", "T", "E"] },
+  { id: "move-12", player: "JohnDoe", word: "RAIN", score: 18, time: "21 min ago", turn: 12, direction: "Across", position: "F4–I4", tiles: ["R", "A", "I", "N"] },
+  { id: "move-11", player: "QwithU", word: "TILE", score: 16, time: "29 min ago", turn: 11, direction: "Down", position: "K10–K13", tiles: ["T", "I", "L", "E"] },
+  { id: "move-10", player: "JohnDoe", word: "STAR", score: 22, time: "36 min ago", turn: 10, direction: "Across", position: "D7–G7", tiles: ["S", "T", "A", "R"] },
+];
+
 export function getUnseenCounts(board: Record<string, BoardTile>, playerRack: Tile[], otherRack: string[]) {
   const counts = { ...standardTileDistribution };
   Object.values(board).forEach(({ letter }) => { counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1); });
