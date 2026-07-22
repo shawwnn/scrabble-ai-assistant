@@ -1,6 +1,12 @@
 import { getPremium, seededTiles, tilePoints, type BoardTile } from "@/lib/game-data";
 
-const premiumStyles = { tw: "bg-rose-500 text-white", dw: "bg-rose-100 text-rose-600", tl: "bg-sky-500 text-white", dl: "bg-sky-100 text-sky-700", star: "bg-amber-400 text-white" };
+const premiumStyles = {
+  tw: "bg-premium-tw text-white",
+  dw: "bg-premium-dw text-rose-700",
+  tl: "bg-premium-tl text-white",
+  dl: "bg-premium-dl text-sky-800",
+  star: "bg-premium-star text-white",
+};
 const premiumLabels = { tw: "TW", dw: "DW", tl: "TL", dl: "DL", star: "★" };
 
 type Props = {
@@ -11,6 +17,49 @@ type Props = {
   onCellDrop?: (row: number, col: number) => void;
 };
 
-export default function ScrabbleBoard({ board = Object.fromEntries(Object.entries(seededTiles).map(([key, letter]) => [key, { letter, points: tilePoints[letter] }])), pending = {}, preview = {}, onCellClick, onCellDrop }: Props) {
-  return <div className="mx-auto w-full max-w-[720px] overflow-auto rounded-2xl bg-board-deep p-2 shadow-xl shadow-slate-900/10 sm:p-3"><div className="grid w-full grid-cols-[repeat(15,minmax(0,1fr))] overflow-hidden rounded-lg border-2 border-board-edge">{Array.from({ length: 225 }, (_, index) => { const row = Math.floor(index / 15), col = index % 15, key = `${row},${col}`, premium = getPremium(row, col), tile = pending[key] ?? preview[key] ?? board[key]; const isPending = Boolean(pending[key]); const isPreview = Boolean(preview[key]) && !isPending; return <button type="button" key={key} aria-label={tile ? `${tile.letter} at row ${row + 1}, column ${col + 1}${isPending ? ", pending" : ""}` : `Empty board square at row ${row + 1}, column ${col + 1}`} onClick={() => onCellClick?.(row, col)} onDragOver={(event) => { if (onCellDrop) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); onCellDrop?.(row, col); }} className={`relative aspect-square border border-[#287278]/60 text-[8px] font-extrabold sm:text-[10px] ${premium ? premiumStyles[premium] : "bg-board"} ${isPending ? "ring-2 ring-inset ring-amber-300" : ""} ${isPreview ? "ring-2 ring-inset ring-violet-300 opacity-90" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110" : "cursor-default"}`}>{tile && <span className={`absolute inset-[2px] grid place-items-center rounded-[3px] text-sm text-slate-800 shadow-sm sm:text-base ${isPreview ? "bg-violet-100" : isPending ? "bg-amber-100" : "bg-[#fff8e8]"}`}>{tile.letter}<small className="absolute bottom-0 right-0.5 text-[7px] font-bold">{tile.points}</small></span>}{!tile && premium && premiumLabels[premium]}</button> })}</div></div>;
+export default function ScrabbleBoard({
+  board = Object.fromEntries(Object.entries(seededTiles).map(([key, letter]) => [key, { letter, points: tilePoints[letter] }])),
+  pending = {},
+  preview = {},
+  onCellClick,
+  onCellDrop,
+}: Props) {
+  return (
+    <div className="board-shell mx-auto w-full max-w-[720px] rounded-2xl p-2 shadow-xl sm:p-3">
+      <div className="grid aspect-square w-full grid-cols-15 overflow-hidden rounded-xl border-2 border-board-edge bg-board-deep">
+        {Array.from({ length: 225 }, (_, index) => {
+          const row = Math.floor(index / 15);
+          const col = index % 15;
+          const key = `${row},${col}`;
+          const premium = getPremium(row, col);
+          const tile = pending[key] ?? preview[key] ?? board[key];
+          const isPending = Boolean(pending[key]);
+          const isPreview = Boolean(preview[key]) && !isPending;
+          return (
+            <button
+              type="button"
+              key={key}
+              aria-label={tile ? `${tile.letter} at row ${row + 1}, column ${col + 1}${isPending ? ", pending" : ""}` : `Empty board square at row ${row + 1}, column ${col + 1}`}
+              onClick={() => onCellClick?.(row, col)}
+              onDragOver={(event) => { if (onCellDrop) event.preventDefault(); }}
+              onDrop={(event) => { event.preventDefault(); onCellDrop?.(row, col); }}
+              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isPending ? "ring-2 ring-inset ring-amber-300" : ""} ${isPreview ? "ring-2 ring-inset ring-violet-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
+            >
+              {premium && !tile && <span className="absolute inset-0 grid place-items-center tracking-tight opacity-90">{premiumLabels[premium]}</span>}
+              {tile && (
+                <span className={`absolute inset-[10%] grid place-items-center rounded-[18%] border text-[clamp(11px,3.7vw,24px)] leading-none shadow-[0_2px_3px_rgba(15,23,42,.3)] ${isPreview ? "border-violet-300 bg-violet-100 text-violet-900" : isPending ? "border-amber-300 bg-amber-100 text-slate-900" : "border-[#d6bc82] bg-tile text-slate-900"}`}>
+                  {tile.letter}
+                  <small className="absolute bottom-[7%] right-[8%] text-[clamp(5px,1.35vw,10px)] font-bold">{tile.points}</small>
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex items-center justify-between px-1 text-[10px] font-semibold text-white/65 sm:text-xs">
+        <span>Tap a square to place</span>
+        <span>Drag tiles from your rack</span>
+      </div>
+    </div>
+  );
 }

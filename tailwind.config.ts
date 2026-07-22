@@ -22,6 +22,7 @@ export default {
           deep: "#1a5b61",
           edge: "#12474e",
         },
+        tile: "#fff8e8",
         premium: {
           tw: "#ef5b68",
           dw: "#fce2e5",
@@ -72,6 +73,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      gridTemplateColumns: {
+        15: "repeat(15, minmax(0, 1fr))",
       },
       borderRadius: {
         lg: "var(--radius)",
