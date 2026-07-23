@@ -1,11 +1,62 @@
-import { ArrowUpRight, ChevronRight, Clock3, Gamepad2, Sparkles, Trophy, Zap } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { games, recentGames } from "@/lib/game-data";
+import { DemoResponse } from "@shared/api";
+import { useEffect, useState } from "react";
 
-export default function Index() { return <div className="space-y-8">
-  <section className="relative overflow-hidden rounded-3xl bg-sidebar p-7 text-white md:p-10"><div className="relative z-10 max-w-2xl"><div className="mb-5 inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-teal-200"><Sparkles className="h-3.5 w-3.5" /> Your intelligent word game companion</div><h1 className="max-w-xl text-3xl font-extrabold tracking-tight md:text-5xl md:leading-[1.08]">Play sharper.<br /><span className="text-teal-300">Find your best word.</span></h1><p className="mt-5 max-w-lg text-sm leading-6 text-slate-300">Challenge your vocabulary, get strategic suggestions, and make every move count with a better way to play Scrabble.</p><div className="mt-8 flex flex-wrap gap-3"><Button asChild size="lg" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90"><Link to="/new-game">Start a new game <ArrowUpRight className="ml-2 h-4 w-4" /></Link></Button><Button asChild variant="outline" size="lg" className="rounded-xl border-slate-600 bg-transparent text-white hover:bg-white/10"><Link to="/games">Continue playing</Link></Button></div></div><div className="absolute -right-14 -top-20 h-80 w-80 rounded-full border-[36px] border-primary/20" /><div className="absolute -bottom-24 right-20 h-56 w-56 rounded-full bg-primary/20 blur-3xl" /><div className="absolute right-12 top-12 hidden rotate-12 gap-2 md:flex">{["S","C","R","A","B","B","L","E"].map((x,i)=><span key={i} className="grid h-12 w-12 place-items-center rounded-lg bg-[#fff8e8] text-lg font-black text-slate-800 shadow-lg">{x}</span>)}</div></section>
-  <section className="grid gap-4 sm:grid-cols-3"><Stat icon={Gamepad2} label="Games in progress" value="3" detail="2 are your turn" /><Stat icon={Trophy} label="Win rate" value="68%" detail="+8% this month" /><Stat icon={Zap} label="Best score" value="420" detail="Against TileStorm" /></section>
-  <section className="grid gap-8 xl:grid-cols-[1fr_360px]"><div className="space-y-4"><div className="flex items-center justify-between"><div><h2 className="text-xl font-bold">Continue playing</h2><p className="mt-1 text-sm text-muted-foreground">Pick up where you left off.</p></div><Link to="/games" className="flex items-center gap-1 text-sm font-semibold text-primary">View all <ChevronRight className="h-4 w-4" /></Link></div><div className="grid gap-3 md:grid-cols-3">{games.map((game) => <Link key={game.id} to={`/games/${game.id}`} className="group rounded-2xl border border-border bg-card p-5 shadow-sm hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><div className="flex items-start justify-between"><div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 font-bold text-primary">{game.opponentInitial}</div><span className={`rounded-full px-2 py-1 text-[10px] font-bold ${game.turn === "Your turn" ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground"}`}>{game.turn}</span></div><h3 className="mt-5 font-bold">{game.opponent}</h3><p className="mt-1 text-sm text-muted-foreground">{game.score}</p><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${game.progress}%` }} /></div><p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="h-3 w-3" /> {game.updated}</p></Link>)}</div></div><div className="rounded-2xl border border-border bg-card p-5"><div className="flex items-center justify-between"><div><h2 className="font-bold">Recent matches</h2><p className="mt-1 text-xs text-muted-foreground">Your latest results</p></div><Trophy className="h-5 w-5 text-accent" /></div><div className="mt-5 divide-y divide-border">{recentGames.map((game) => <div key={game.opponent} className="flex items-center justify-between py-3 first:pt-0 last:pb-0"><div><p className="text-sm font-semibold">{game.opponent}</p><p className="mt-0.5 text-xs text-muted-foreground">{game.date}</p></div><div className="text-right"><p className={`text-xs font-bold ${game.result === "Won" ? "text-emerald-600" : "text-rose-500"}`}>{game.result}</p><p className="mt-0.5 text-xs text-muted-foreground">{game.score}</p></div></div>)}</div><Link to="/history" className="mt-4 flex items-center justify-center gap-1 border-t border-border pt-4 text-xs font-semibold text-primary">View match history <ArrowUpRight className="h-3 w-3" /></Link></div></section>
-</div> }
-function Stat({ icon: Icon, label, value, detail }: { icon: typeof Trophy; label: string; value: string; detail: string }) { return <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm"><span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary"><Icon className="h-5 w-5" /></span><div><p className="text-xs font-medium text-muted-foreground">{label}</p><div className="mt-1 flex items-baseline gap-2"><span className="text-2xl font-extrabold">{value}</span><span className="text-xs text-emerald-600">{detail}</span></div></div></div> }
+export default function Index() {
+  const [exampleFromServer, setExampleFromServer] = useState("");
+  // Fetch users on component mount
+  useEffect(() => {
+    fetchDemo();
+  }, []);
+
+  // Example of how to fetch data from the server (if needed)
+  const fetchDemo = async () => {
+    try {
+      const response = await fetch("/api/demo");
+      const data = (await response.json()) as DemoResponse;
+      setExampleFromServer(data.message);
+    } catch (error) {
+      console.error("Error fetching hello:", error);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+      <div className="text-center">
+        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
+        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
+          <svg
+            className="animate-spin h-8 w-8 text-slate-400"
+            viewBox="0 0 50 50"
+          >
+            <circle
+              className="opacity-30"
+              cx="25"
+              cy="25"
+              r="20"
+              stroke="currentColor"
+              strokeWidth="5"
+              fill="none"
+            />
+            <circle
+              className="text-slate-600"
+              cx="25"
+              cy="25"
+              r="20"
+              stroke="currentColor"
+              strokeWidth="5"
+              fill="none"
+              strokeDasharray="100"
+              strokeDashoffset="75"
+            />
+          </svg>
+          Generating your app...
+        </h1>
+        <p className="mt-4 text-slate-600 max-w-md">
+          Watch the chat on the left for updates that might need your attention
+          to finish generating
+        </p>
+        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
+      </div>
+    </div>
+  );
+}
