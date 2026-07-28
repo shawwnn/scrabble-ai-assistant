@@ -3,4 +3,119 @@ import { ArrowLeft, BookOpen, Check, ChevronDown, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-export default function NewGame() { const navigate = useNavigate(); const [name, setName] = useState("QwithU"); const [opponent, setOpponent] = useState("JohnDoe"); const [dictionary, setDictionary] = useState("TWL"); return <div className="mx-auto max-w-3xl space-y-8"><div><Link to="/" className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Back home</Link><h1 className="text-3xl font-extrabold tracking-tight">Start a new game</h1><p className="mt-2 text-muted-foreground">Set up a friendly match and let’s find some great words.</p></div><div className="grid gap-5 md:grid-cols-2"><div className="rounded-2xl border border-border bg-card p-6"><div className="mb-6 flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary"><Users className="h-5 w-5" /></span><div><h2 className="font-bold">Players</h2><p className="text-xs text-muted-foreground">Who is playing?</p></div></div><label className="text-sm font-semibold">Your name<Input value={name} onChange={(e) => setName(e.target.value)} className="mt-2 h-11 rounded-xl" /></label><label className="mt-5 block text-sm font-semibold">Opponent name<Input value={opponent} onChange={(e) => setOpponent(e.target.value)} className="mt-2 h-11 rounded-xl" /></label><div className="mt-6 rounded-xl bg-muted p-4"><p className="text-xs font-semibold text-muted-foreground">First player</p><div className="mt-3 flex gap-2">{[name, opponent].map((player, i) => <button key={player} className={`flex-1 rounded-lg border px-3 py-2 text-sm ${i === 0 ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border bg-card text-muted-foreground"}`}>{i === 0 && <Check className="mr-1 inline h-3 w-3" />}{player}</button>)}</div></div></div><div className="rounded-2xl border border-border bg-card p-6"><div className="mb-6 flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/20 text-amber-700"><BookOpen className="h-5 w-5" /></span><div><h2 className="font-bold">Game rules</h2><p className="text-xs text-muted-foreground">Choose your dictionary</p></div></div><label className="text-sm font-semibold">Dictionary<select value={dictionary} onChange={(e) => setDictionary(e.target.value)} className="mt-2 flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"><option value="TWL">TWL — North American English</option><option value="CSW">CSW — International English</option></select></label><div className="mt-5 rounded-xl border border-border p-4"><p className="text-sm font-semibold">Classic Scrabble</p><ul className="mt-3 space-y-2 text-xs text-muted-foreground"><li>• Standard 15 × 15 board</li><li>• 7 tiles per player</li><li>• 50 bonus points for using all tiles</li></ul></div><p className="mt-5 text-xs leading-5 text-muted-foreground">The dictionary is locked once the game starts. You can change your default in Settings for future games.</p></div></div><div className="flex justify-end gap-3"><Button asChild variant="outline" className="rounded-xl"><Link to="/">Cancel</Link></Button><Button onClick={() => navigate("/games/wordmaster")} className="rounded-xl px-6">Create game <ChevronDown className="ml-2 h-4 w-4 rotate-[-90deg]" /></Button></div></div> }
+export default function NewGame() {
+  const navigate = useNavigate();
+  const [name, setName] = useState("QwithoutU");
+  const [opponent, setOpponent] = useState("JohnDo");
+  const [dictionary, setDictionary] = useState("TWL");
+  return (
+    <div className="mx-auto max-w-3xl space-y-8">
+      <div>
+        <Link
+          to="/"
+          className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back home
+        </Link>
+        <h1 className="text-3xl font-extrabold tracking-tight">
+          Start a new game
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Set up a friendly match and let’s find some great words.
+        </p>
+      </div>
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="rounded-2xl border border-border bg-card p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+              <Users className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="font-bold">Players</h2>
+              <p className="text-xs text-muted-foreground">Who is playing?</p>
+            </div>
+          </div>
+          <label className="text-sm font-semibold">
+            Your name
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-2 h-11 rounded-xl"
+            />
+          </label>
+          <label className="mt-5 block text-sm font-semibold">
+            Opponent name
+            <Input
+              value={opponent}
+              onChange={(e) => setOpponent(e.target.value)}
+              className="mt-2 h-11 rounded-xl"
+            />
+          </label>
+          <div className="mt-6 rounded-xl bg-muted p-4">
+            <p className="text-xs font-semibold text-muted-foreground">
+              First player
+            </p>
+            <div className="mt-3 flex gap-2">
+              {[name, opponent].map((player, i) => (
+                <button
+                  key={player}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm ${i === 0 ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border bg-card text-muted-foreground"}`}
+                >
+                  {i === 0 && <Check className="mr-1 inline h-3 w-3" />}
+                  {player}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-6">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/20 text-amber-700">
+              <BookOpen className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="font-bold">Game rules</h2>
+              <p className="text-xs text-muted-foreground">
+                Choose your dictionary
+              </p>
+            </div>
+          </div>
+          <label className="text-sm font-semibold">
+            Dictionary
+            <select
+              value={dictionary}
+              onChange={(e) => setDictionary(e.target.value)}
+              className="mt-2 flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
+            >
+              <option value="TWL">TWL — North American English</option>
+              <option value="CSW">CSW — International English</option>
+            </select>
+          </label>
+          <div className="mt-5 rounded-xl border border-border p-4">
+            <p className="text-sm font-semibold">Classic Scrabble</p>
+            <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
+              <li>• Standard 15 × 15 board</li>
+              <li>• 7 tiles per player</li>
+              <li>• 50 bonus points for using all tiles</li>
+            </ul>
+          </div>
+          <p className="mt-5 text-xs leading-5 text-muted-foreground">
+            The dictionary is locked once the game starts. You can change your
+            default in Settings for future games.
+          </p>
+        </div>
+      </div>
+      <div className="flex justify-end gap-3">
+        <Button asChild variant="outline" className="rounded-xl">
+          <Link to="/">Cancel</Link>
+        </Button>
+        <Button
+          onClick={() => navigate("/games/wordmaster")}
+          className="rounded-xl px-6"
+        >
+          Create game <ChevronDown className="ml-2 h-4 w-4 rotate-[-90deg]" />
+        </Button>
+      </div>
+    </div>
+  );
+}
