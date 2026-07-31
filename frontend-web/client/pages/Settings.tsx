@@ -1,3 +1,97 @@
 import { Check, Moon, Palette, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-export default function Settings() { const [theme, setTheme] = useState(() => localStorage.getItem("scrabble-theme") || "light"); const [dictionary, setDictionary] = useState("TWL"); useEffect(() => { document.documentElement.classList.toggle("dark", theme === "dark"); localStorage.setItem("scrabble-theme", theme); }, [theme]); return <div className="mx-auto max-w-3xl space-y-8"><div><p className="text-sm font-semibold text-primary">Preferences</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight">Settings</h1><p className="mt-2 text-muted-foreground">Make Scrabble feel like yours.</p></div><section className="rounded-2xl border border-border bg-card p-6"><div className="flex items-start gap-4"><span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary"><Palette className="h-5 w-5" /></span><div><h2 className="font-bold">Appearance</h2><p className="mt-1 text-sm text-muted-foreground">Choose how the app looks on your device.</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{[["light","Light mode",Sun],["dark","Dark mode",Moon]].map(([value,label,Icon]) => <button key={value as string} onClick={() => setTheme(value as string)} className={`relative flex items-center gap-3 rounded-xl border p-4 text-left ${(theme === value) ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}><span className="grid h-9 w-9 place-items-center rounded-lg bg-muted"><Icon className="h-4 w-4" /></span><span><b className="block text-sm">{label as string}</b><small className="text-xs text-muted-foreground">{value === "light" ? "Crisp and bright" : "Easy on the eyes"}</small></span>{theme === value && <Check className="ml-auto h-4 w-4 text-primary" />}</button>)}</div></section><section className="rounded-2xl border border-border bg-card p-6"><div className="flex items-start gap-4"><span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/20 text-amber-700">Aa</span><div><h2 className="font-bold">Game defaults</h2><p className="mt-1 text-sm text-muted-foreground">These choices apply to new games only.</p></div></div><label className="mt-6 block text-sm font-semibold">Default dictionary<select value={dictionary} onChange={(e) => setDictionary(e.target.value)} className="mt-2 flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"><option value="TWL">TWL — North American English</option><option value="CSW">CSW — International English</option></select></label><p className="mt-4 rounded-xl bg-muted p-4 text-xs leading-5 text-muted-foreground">A game’s dictionary is locked when it is created and cannot be changed later.</p></section><p className="text-center text-xs text-muted-foreground">Your preferences are saved automatically on this device.</p></div> }
+
+export default function Settings() {
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("scrabble-theme") || "light",
+  );
+  const [dictionary, setDictionary] = useState("TWL");
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("scrabble-theme", theme);
+  }, [theme]);
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-8">
+      <div>
+        <p className="text-sm font-semibold text-primary">Preferences</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight">
+          Settings
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Make Scrabble feel like yours.
+        </p>
+      </div>
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <div className="flex items-start gap-4">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Palette className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="font-bold">Appearance</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Choose how the app looks on your device.
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {[
+            ["light", "Light mode", Sun],
+            ["dark", "Dark mode", Moon],
+          ].map(([value, label, Icon]) => (
+            <button
+              key={value as string}
+              onClick={() => setTheme(value as string)}
+              className={`relative flex items-center gap-3 rounded-xl border p-4 text-left ${theme === value ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+            >
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-muted">
+                <Icon className="h-4 w-4" />
+              </span>
+              <span>
+                <b className="block text-sm">{label as string}</b>
+                <small className="text-xs text-muted-foreground">
+                  {value === "light" ? "Crisp and bright" : "Easy on the eyes"}
+                </small>
+              </span>
+              {theme === value && (
+                <Check className="ml-auto h-4 w-4 text-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      </section>
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <div className="flex items-start gap-4">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/20 text-amber-700">
+            Aa
+          </span>
+          <div>
+            <h2 className="font-bold">Game defaults</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              These choices apply to new games only.
+            </p>
+          </div>
+        </div>
+        <label className="mt-6 block text-sm font-semibold">
+          Default dictionary
+          <select
+            value={dictionary}
+            onChange={(e) => setDictionary(e.target.value)}
+            className="mt-2 flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
+          >
+            <option value="TWL">TWL — North American English</option>
+            <option value="CSW">CSW — International English</option>
+          </select>
+        </label>
+        <p className="mt-4 rounded-xl bg-muted p-4 text-xs leading-5 text-muted-foreground">
+          A game’s dictionary is locked when it is created and cannot be changed
+          later.
+        </p>
+      </section>
+      <p className="text-center text-xs text-muted-foreground">
+        Your preferences are saved automatically on this device.
+      </p>
+    </div>
+  );
+}

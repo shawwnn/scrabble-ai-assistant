@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, Check, ChevronDown, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 export default function NewGame() {
   const navigate = useNavigate();
   const [name, setName] = useState("QwithoutU");
