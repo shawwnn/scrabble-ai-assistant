@@ -93,10 +93,28 @@
     font-family: "Inter", sans-serif;
   }
 
-  button, a { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease; }
-  input, select { transition: border-color 160ms ease, box-shadow 160ms ease; }
-  .board-shell { background: linear-gradient(145deg, hsl(184 57% 25%), hsl(185 65% 18%)); }
-  ::selection { background: hsl(var(--primary) / 0.18); }
+  button,
+  a {
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease,
+      opacity 160ms ease,
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+  input,
+  select {
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .board-shell {
+    background: linear-gradient(145deg, hsl(184 57% 25%), hsl(185 65% 18%));
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.18);
+  }
 
   :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
     overflow-wrap: anywhere;
