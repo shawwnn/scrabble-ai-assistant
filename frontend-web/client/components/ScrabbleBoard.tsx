@@ -15,6 +15,9 @@ type Props = {
   preview?: Record<string, BoardTile>;
   onCellClick?: (row: number, col: number) => void;
   onCellDrop?: (row: number, col: number) => void;
+  onPendingDragStart?: (key: string) => void;
+  validationStatus?: "unchanged" | "valid" | "invalid";
+  moveScore?: number;
 };
 
 export default function ScrabbleBoard({
@@ -23,10 +26,13 @@ export default function ScrabbleBoard({
   preview = {},
   onCellClick,
   onCellDrop,
+  onPendingDragStart,
+  validationStatus = "unchanged",
+  moveScore = 0,
 }: Props) {
   return (
-    <div className="board-shell mx-auto w-full max-w-[720px] rounded-2xl p-2 shadow-xl sm:p-3">
-      <div className="grid aspect-square w-full grid-cols-15 overflow-hidden rounded-xl border-2 border-board-edge bg-board-deep">
+    <div className="board-shell mx-auto w-full min-w-[320px] max-w-[720px] rounded-2xl p-2 shadow-xl sm:p-3">
+      <div className="grid aspect-square w-full min-w-[320px] grid-cols-15 overflow-visible rounded-xl border-2 border-board-edge bg-board-deep">
         {Array.from({ length: 225 }, (_, index) => {
           const row = Math.floor(index / 15);
           const col = index % 15;
@@ -35,23 +41,28 @@ export default function ScrabbleBoard({
           const tile = pending[key] ?? preview[key] ?? board[key];
           const isPending = Boolean(pending[key]);
           const isPreview = Boolean(preview[key]) && !isPending;
+          const pendingKeys = Object.keys(pending);
+          const scoreAnchor = pendingKeys[pendingKeys.length - 1] === key;
           return (
             <button
               type="button"
               key={key}
               aria-label={tile ? `${tile.letter} at row ${row + 1}, column ${col + 1}${isPending ? ", pending" : ""}` : `Empty board square at row ${row + 1}, column ${col + 1}`}
               onClick={() => onCellClick?.(row, col)}
+              draggable={isPending}
+              onDragStart={() => { if (isPending) onPendingDragStart?.(key); }}
               onDragOver={(event) => { if (onCellDrop) event.preventDefault(); }}
               onDrop={(event) => { event.preventDefault(); onCellDrop?.(row, col); }}
-              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isPending ? "ring-2 ring-inset ring-amber-300" : ""} ${isPreview ? "ring-2 ring-inset ring-violet-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
+              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isPending && validationStatus === "valid" ? "ring-2 ring-inset ring-emerald-400" : ""} ${isPending && validationStatus === "invalid" ? "ring-2 ring-inset ring-rose-500" : ""} ${isPending && validationStatus === "unchanged" ? "ring-2 ring-inset ring-amber-300" : ""} ${isPreview ? "ring-2 ring-inset ring-violet-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
             >
               {premium && !tile && <span className="absolute inset-0 grid place-items-center tracking-tight opacity-90">{premiumLabels[premium]}</span>}
               {tile && (
-                <span className={`absolute inset-[10%] grid place-items-center rounded-[18%] border text-[clamp(11px,3.7vw,24px)] leading-none shadow-[0_2px_3px_rgba(15,23,42,.3)] ${isPreview ? "border-violet-300 bg-violet-100 text-violet-900" : isPending ? "border-amber-300 bg-amber-100 text-slate-900" : "border-[#d6bc82] bg-tile text-slate-900"}`}>
+                <span className={`absolute inset-[10%] grid place-items-center rounded-[18%] border text-[clamp(11px,3.7vw,24px)] leading-none shadow-[0_2px_3px_rgba(15,23,42,.3)] ${isPreview ? "border-violet-300 bg-violet-100 text-violet-900" : isPending && validationStatus === "valid" ? "border-emerald-400 bg-tile text-slate-900" : isPending && validationStatus === "invalid" ? "border-rose-500 bg-tile text-slate-900" : isPending ? "border-amber-300 bg-tile text-slate-900" : "border-[#d6bc82] bg-tile text-slate-900"}`}>
                   {tile.letter}
                   <small className="absolute bottom-[7%] right-[8%] text-[clamp(5px,1.35vw,10px)] font-bold">{tile.points}</small>
                 </span>
               )}
+              {isPending && scoreAnchor && validationStatus === "valid" && moveScore > 0 && <span className="pointer-events-none absolute left-1/2 top-full z-20 mt-0.5 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-extrabold text-white shadow">+{moveScore}</span>}
             </button>
           );
         })}
