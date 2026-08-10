@@ -56,3 +56,70 @@ export function replacementTiles(count: number, counts: Record<string, number>):
   const available = Object.entries(counts).flatMap(([letter, quantity]) => Array.from({ length: quantity }, () => letter));
   return available.slice(0, count).map((letter, index) => ({ letter, points: tilePoints[letter], id: `${letter}-replacement-${Date.now()}-${index}` }));
 }
+
+export type MoveValidation = {
+  status: "unchanged" | "valid" | "invalid";
+  reason: string;
+  score: number;
+  words: string[];
+};
+
+const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]] as const;
+const inBounds = (row: number, col: number) => row >= 0 && row < 15 && col >= 0 && col < 15;
+const keyOf = (row: number, col: number) => `${row},${col}`;
+
+function getWord(cells: Record<string, BoardTile>, row: number, col: number, rowStep: number, colStep: number) {
+  let startRow = row;
+  let startCol = col;
+  while (inBounds(startRow - rowStep, startCol - colStep) && cells[keyOf(startRow - rowStep, startCol - colStep)]) {
+    startRow -= rowStep;
+    startCol -= colStep;
+  }
+  const positions: string[] = [];
+  let word = "";
+  while (inBounds(startRow, startCol) && cells[keyOf(startRow, startCol)]) {
+    positions.push(keyOf(startRow, startCol));
+    word += cells[keyOf(startRow, startCol)].letter;
+    startRow += rowStep;
+    startCol += colStep;
+  }
+  return { word, positions };
+}
+
+export function validateMove(board: Record<string, BoardTile>, pending: Record<string, BoardTile>): MoveValidation {
+  const pendingKeys = Object.keys(pending);
+  if (!pendingKeys.length) return { status: "unchanged", reason: "Place a tile to begin your move.", score: 0, words: [] };
+  const cells = { ...board, ...pending };
+  const touchesBoard = pendingKeys.some((key) => {
+    const [row, col] = key.split(",").map(Number);
+    return directions.some(([dr, dc]) => board[keyOf(row + dr, col + dc)]);
+  });
+  const connected = pendingKeys.every((key) => {
+    const [row, col] = key.split(",").map(Number);
+    return directions.some(([dr, dc]) => cells[keyOf(row + dr, col + dc)] && keyOf(row + dr, col + dc) !== key);
+  });
+  if (!touchesBoard || !connected) return { status: "invalid", reason: "Every new tile must connect to the existing board.", score: 0, words: [] };
+
+  const words = new Set<string>();
+  pendingKeys.forEach((key) => {
+    const [row, col] = key.split(",").map(Number);
+    for (const [dr, dc] of [[0, 1], [1, 0]] as const) {
+      const word = getWord(cells, row, col, dr, dc);
+      if (word.positions.length > 1 && word.positions.some((position) => pending[position])) words.add(word.word);
+    }
+  });
+  if (!words.size) return { status: "invalid", reason: "Your move must create at least one word.", score: 0, words: [] };
+
+  let score = 0;
+  pendingKeys.forEach((key) => {
+    const [row, col] = key.split(",").map(Number);
+    const premium = getPremium(row, col);
+    const multiplier = premium === "dl" ? 2 : premium === "tl" ? 3 : 1;
+    score += (pending[key].points || tilePoints[pending[key].letter] || 0) * multiplier;
+  });
+  score *= pendingKeys.some((key) => {
+    const [row, col] = key.split(",").map(Number);
+    return getPremium(row, col) === "dw";
+  }) ? 2 : 1;
+  return { status: "valid", reason: `${words.size} word${words.size === 1 ? "" : "s"} formed.`, score, words: [...words] };
+}
