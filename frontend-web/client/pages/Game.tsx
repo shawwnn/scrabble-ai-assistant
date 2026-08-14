@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-  ArrowLeft,
   Check,
   CircleHelp,
   Hand,
@@ -64,7 +63,6 @@ export default function Game() {
   const [currentRack, setCurrentRack] = useState<Tile[]>(initialRack);
   const [selectedRackId, setSelectedRackId] = useState<string | null>(null);
   const [pending, setPending] = useState<Record<string, BoardTile>>({});
-  const [preview, setPreview] = useState<Record<string, BoardTile>>({});
   const [bagOpen, setBagOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -119,7 +117,7 @@ export default function Game() {
       setFeedback("Pending tile removed. The move will be checked again.");
       return;
     }
-    if (board[key] || preview[key]) {
+    if (board[key]) {
       setFeedback("That square is already occupied.");
       return;
     }
@@ -151,26 +149,6 @@ export default function Game() {
     setDraggedPendingKey(null);
     setFeedback("Pending tile moved. The move was validated again.");
   };
-
-  // SAMPLE REACT TO BACKEND
-  const sendGameData = async () => {
-    const response = await fetch("http://localhost:3000/api/games/move", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        board,
-        rack: currentRack,
-        pending,
-      }),
-    });
-
-    const data = await response.json();
-
-    console.log(data);
-  };
-
   const submitMove = () => {
     if (validation.status !== "valid") {
       setFeedback(validation.reason);
@@ -178,7 +156,6 @@ export default function Game() {
     }
     setBoard((current) => ({ ...current, ...pending }));
     setPending({});
-    setPreview({});
     setScore((current) => current + validation.score);
     setFeedback(
       `Move confirmed for ${validation.score} points. Choose how to replenish your rack.`,
@@ -186,51 +163,12 @@ export default function Game() {
     setReplenishOpen(true);
   };
 
-  const showSuggestion = (index: number) => {
-    const suggestion = suggestions[index];
-    const next: Record<string, BoardTile> = {};
-    [...suggestion.word].forEach((letter, offset) => {
-      const row =
-        suggestion.start[0] + (suggestion.direction === "down" ? offset : 0);
-      const col =
-        suggestion.start[1] + (suggestion.direction === "across" ? offset : 0);
-      const key = `${row},${col}`;
-      if (!board[key] && !pending[key])
-        next[key] = { letter, points: tilePoints[letter], preview: true };
-    });
-    setPreview(next);
-    setFeedback(
-      `${suggestion.word} is previewed. Apply it only if you want to stage those tiles.`,
-    );
-  };
-
   const openAi = () => {
     setAiLoading(true);
     setTimeout(() => {
       setAiLoading(false);
       setAiOpen(true);
-      showSuggestion(0);
     }, 350);
-  };
-
-  const applyPreview = () => {
-    const letters = Object.values(preview);
-    const nextRack = [...currentRack];
-    const nextPending = { ...pending };
-    Object.entries(preview).forEach(([key, tile]) => {
-      const index = nextRack.findIndex((item) => item.letter === tile.letter);
-      if (index >= 0) {
-        nextRack.splice(index, 1);
-        nextPending[key] = { ...tile, preview: false, pending: true };
-      }
-    });
-    setCurrentRack(nextRack);
-    setPending(nextPending);
-    setPreview({});
-    setAiOpen(false);
-    setFeedback(
-      `${letters.length} AI tiles staged. The move is being validated.`,
-    );
   };
 
   const drawRandom = () => {
@@ -261,12 +199,6 @@ export default function Game() {
     <div className="space-y-5 pb-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Link
-            to="/games"
-            className="mb-3 inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> All games
-          </Link>
           <h1 className="flex flex-wrap items-center gap-3 text-2xl font-extrabold">
             You vs. JohnDoe{" "}
             <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-bold text-primary">
@@ -274,7 +206,7 @@ export default function Game() {
             </span>
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 xl:flex">
           <Button variant="outline" size="sm" className="rounded-lg">
             <CircleHelp className="h-4 w-4" /> How to play
           </Button>
@@ -311,7 +243,6 @@ export default function Game() {
             <ScrabbleBoard
               board={board}
               pending={pending}
-              preview={preview}
               validationStatus={validation.status}
               moveScore={validation.score}
               onCellClick={placeTile}
@@ -331,6 +262,19 @@ export default function Game() {
               {validation.status === "valid"
                 ? `${validation.reason} Score: ${validation.score} points.`
                 : validation.reason || feedback}
+            </div>
+            <div className="mt-2 flex items-center justify-end gap-2 xl:hidden">
+              <Button variant="outline" size="sm" className="rounded-lg">
+                <CircleHelp className="h-4 w-4" /> How to play
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-lg"
+                aria-label="More game options"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
             </div>
           </section>
           <section className="rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4">
@@ -394,9 +338,6 @@ export default function Game() {
               <Sparkles className="h-4 w-4" />{" "}
               {aiLoading ? "Analyzing..." : "AI Hint"}
             </Button>
-            {/* // SAMPLE REACT TO BACKEND */}
-
-            <Button onClick={sendGameData}>Send Game Data</Button>
 
             <Button
               className="h-11 bg-primary px-2 text-xs font-extrabold hover:bg-primary/90 sm:px-5 sm:text-sm"
@@ -448,27 +389,30 @@ export default function Game() {
         </main>
 
         <aside className="min-w-0 space-y-4">
-          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Move history
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               Select a move to inspect its board moment.
             </p>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3 space-y-1">
               {moveHistory.map((move) => (
                 <button
                   type="button"
                   key={move.id}
                   onClick={() => setSelectedMoveId(move.id)}
-                  className="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left hover:border-primary/20 hover:bg-primary/5"
+                  className="flex w-full items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-left hover:border-primary/20 hover:bg-primary/5"
                 >
-                  <span className="w-5 text-xs text-muted-foreground">
+                  <span className="w-5 text-[10px] text-muted-foreground">
                     {move.turn}
                   </span>
-                  <strong className="flex-1 text-sm">{move.word}</strong>
-                  <span className="text-sm font-bold text-primary">
+                  <strong className="flex-1 text-xs">{move.word}</strong>
+                  <span className="text-xs font-bold text-primary">
                     {move.score}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {move.time}
                   </span>
                 </button>
               ))}
@@ -492,6 +436,11 @@ export default function Game() {
             </SheetDescription>
           </SheetHeader>
           <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            <Button variant="outline" asChild>
+              <Link to="/games" onClick={() => setMenuOpen(false)}>
+                Show all games
+              </Link>
+            </Button>
             <Button
               variant="outline"
               onClick={() => {
@@ -561,16 +510,14 @@ export default function Game() {
             </SheetTitle>
             <SheetDescription>
               Top 5 legal moves for the current board and rack. Suggestions
-              never place tiles automatically.
+              are informational only.
             </SheetDescription>
           </SheetHeader>
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 space-y-2">
             {suggestions.map((suggestion, index) => (
-              <button
-                type="button"
+              <div
                 key={suggestion.word}
-                onClick={() => showSuggestion(index)}
-                className={`w-full rounded-xl border p-3 text-left ${index === 0 ? "border-primary/30 bg-primary/5" : "border-border hover:border-primary/20"}`}
+                className={`w-full rounded-xl border p-3 ${index === 0 ? "border-primary/30 bg-primary/5" : "border-border"}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="grid h-7 w-7 place-items-center rounded bg-primary text-xs font-bold text-primary-foreground">
@@ -581,19 +528,12 @@ export default function Game() {
                     {suggestion.score} pts
                   </span>
                 </div>
-                <div className="mt-2 text-xs text-muted-foreground">
+                <div className="mt-1 text-xs text-muted-foreground">
                   {suggestion.usage} · {suggestion.note}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
-          <Button
-            className="mt-5 w-full"
-            disabled={!Object.keys(preview).length}
-            onClick={applyPreview}
-          >
-            Apply preview
-          </Button>
         </SheetContent>
       </Sheet>
       <Dialog open={replenishOpen} onOpenChange={setReplenishOpen}>

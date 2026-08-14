@@ -1,6 +1,6 @@
 export type Tile = { letter: string; points: number; id: string };
 export type Premium = "tw" | "dw" | "tl" | "dl" | "star" | null;
-export type BoardTile = { letter: string; points: number; pending?: boolean; preview?: boolean };
+export type BoardTile = { letter: string; points: number; pending?: boolean };
 export type GameSummary = { id: string; opponent: string; opponentInitial: string; score: string; turn: "Your turn" | "Their turn"; updated: string; progress: number };
 
 export const tilePoints: Record<string, number> = { A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4, I: 1, J: 8, K: 5, L: 1, M: 3, N: 1, O: 1, P: 3, Q: 10, R: 1, S: 1, T: 1, U: 1, V: 4, W: 4, X: 8, Y: 4, Z: 10, "?": 0 };
@@ -90,15 +90,27 @@ export function validateMove(board: Record<string, BoardTile>, pending: Record<s
   const pendingKeys = Object.keys(pending);
   if (!pendingKeys.length) return { status: "unchanged", reason: "Place a tile to begin your move.", score: 0, words: [] };
   const cells = { ...board, ...pending };
-  const touchesBoard = pendingKeys.some((key) => {
+  const positions = pendingKeys.map((key) => {
     const [row, col] = key.split(",").map(Number);
-    return directions.some(([dr, dc]) => board[keyOf(row + dr, col + dc)]);
+    return { key, row, col };
   });
-  const connected = pendingKeys.every((key) => {
-    const [row, col] = key.split(",").map(Number);
-    return directions.some(([dr, dc]) => cells[keyOf(row + dr, col + dc)] && keyOf(row + dr, col + dc) !== key);
-  });
-  if (!touchesBoard || !connected) return { status: "invalid", reason: "Every new tile must connect to the existing board.", score: 0, words: [] };
+  const touchesBoard = positions.some(({ row, col }) => directions.some(([dr, dc]) => board[keyOf(row + dr, col + dc)]));
+  if (!touchesBoard) return { status: "invalid", reason: "Your move must connect to an existing tile.", score: 0, words: [] };
+
+  if (positions.length > 1) {
+    const rows = new Set(positions.map(({ row }) => row));
+    const cols = new Set(positions.map(({ col }) => col));
+    if (rows.size > 1 && cols.size > 1) return { status: "invalid", reason: "New tiles must stay in one direction.", score: 0, words: [] };
+    const isHorizontal = rows.size === 1;
+    const ordered = [...positions].sort((a, b) => isHorizontal ? a.col - b.col : a.row - b.row);
+    const start = isHorizontal ? ordered[0].col : ordered[0].row;
+    const end = isHorizontal ? ordered[ordered.length - 1].col : ordered[ordered.length - 1].row;
+    for (let offset = start; offset <= end; offset += 1) {
+      const row = isHorizontal ? ordered[0].row : offset;
+      const col = isHorizontal ? offset : ordered[0].col;
+      if (!cells[keyOf(row, col)]) return { status: "invalid", reason: "New tiles must form one contiguous line.", score: 0, words: [] };
+    }
+  }
 
   const words = new Set<string>();
   pendingKeys.forEach((key) => {
