@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import gamesRouter from "./routes/games.js";
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.get("/api/server", (req, res) => {
     status: "ok",
   });
 });
+
+app.use("/api/games", gamesRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
