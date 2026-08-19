@@ -356,6 +356,7 @@ export type MoveValidation = {
   reason: string;
   score: number;
   words: string[];
+  affectedKeys: string[];
 };
 
 const directions = [
@@ -406,6 +407,7 @@ export function validateMove(
       reason: "Place a tile to begin your move.",
       score: 0,
       words: [],
+      affectedKeys: [],
     };
   const cells = { ...board, ...pending };
   const positions = pendingKeys.map((key) => {
@@ -421,6 +423,7 @@ export function validateMove(
       reason: "Your move must connect to an existing tile.",
       score: 0,
       words: [],
+      affectedKeys: pendingKeys,
     };
 
   if (positions.length > 1) {
@@ -432,6 +435,7 @@ export function validateMove(
         reason: "New tiles must stay in one direction.",
         score: 0,
         words: [],
+        affectedKeys: pendingKeys,
       };
     const isHorizontal = rows.size === 1;
     const ordered = [...positions].sort((a, b) =>
@@ -450,11 +454,13 @@ export function validateMove(
           reason: "New tiles must form one contiguous line.",
           score: 0,
           words: [],
+          affectedKeys: pendingKeys,
         };
     }
   }
 
   const words = new Set<string>();
+  const affectedKeys = new Set<string>();
   pendingKeys.forEach((key) => {
     const [row, col] = key.split(",").map(Number);
     for (const [dr, dc] of [
@@ -465,8 +471,10 @@ export function validateMove(
       if (
         word.positions.length > 1 &&
         word.positions.some((position) => pending[position])
-      )
+      ) {
         words.add(word.word);
+        word.positions.forEach((position) => affectedKeys.add(position));
+      }
     }
   });
   if (!words.size)
@@ -475,6 +483,7 @@ export function validateMove(
       reason: "Your move must create at least one word.",
       score: 0,
       words: [],
+      affectedKeys: pendingKeys,
     };
 
   let score = 0;
@@ -497,5 +506,6 @@ export function validateMove(
     reason: `${words.size} word${words.size === 1 ? "" : "s"} formed.`,
     score,
     words: [...words],
+    affectedKeys: [...affectedKeys],
   };
 }

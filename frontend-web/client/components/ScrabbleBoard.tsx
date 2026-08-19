@@ -21,6 +21,7 @@ type Props = {
   onCellDrop?: (row: number, col: number) => void;
   onPendingDragStart?: (key: string) => void;
   validationStatus?: "unchanged" | "valid" | "invalid";
+  affectedKeys?: string[];
   moveScore?: number;
 };
 
@@ -36,8 +37,11 @@ export default function ScrabbleBoard({
   onCellDrop,
   onPendingDragStart,
   validationStatus = "unchanged",
+  affectedKeys = [],
   moveScore = 0,
 }: Props) {
+  const affectedKeySet = new Set(affectedKeys);
+
   return (
     <div className="board-shell mx-auto w-full min-w-[320px] max-w-[720px] rounded-2xl p-2 shadow-xl sm:p-3">
       <div className="grid aspect-square w-full min-w-[320px] grid-cols-15 overflow-visible rounded-xl border-2 border-board-edge bg-board-deep">
@@ -48,6 +52,7 @@ export default function ScrabbleBoard({
           const premium = getPremium(row, col);
           const tile = pending[key] ?? board[key];
           const isPending = Boolean(pending[key]);
+          const isAffected = affectedKeySet.has(key);
           const pendingKeys = Object.keys(pending);
           const scoreAnchor = pendingKeys[pendingKeys.length - 1] === key;
           return (
@@ -71,7 +76,7 @@ export default function ScrabbleBoard({
                 event.preventDefault();
                 onCellDrop?.(row, col);
               }}
-              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isPending && validationStatus === "valid" ? "ring-2 ring-inset ring-emerald-400" : ""} ${isPending && validationStatus === "invalid" ? "ring-2 ring-inset ring-rose-500" : ""} ${isPending && validationStatus === "unchanged" ? "ring-2 ring-inset ring-amber-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
+              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isAffected && validationStatus === "valid" ? "ring-2 ring-inset ring-emerald-400" : ""} ${isAffected && validationStatus === "invalid" ? "ring-2 ring-inset ring-rose-500" : ""} ${isPending && validationStatus === "unchanged" ? "ring-2 ring-inset ring-amber-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
             >
               {premium && !tile && (
                 <span className="absolute inset-0 grid place-items-center tracking-tight opacity-90">
@@ -80,7 +85,7 @@ export default function ScrabbleBoard({
               )}
               {tile && (
                 <span
-                  className={`absolute inset-[10%] grid place-items-center rounded-[18%] border text-[clamp(11px,3.7vw,24px)] leading-none shadow-[0_2px_3px_rgba(15,23,42,.3)] ${isPending && validationStatus === "valid" ? "border-emerald-400 bg-tile text-slate-900" : isPending && validationStatus === "invalid" ? "border-rose-500 bg-tile text-slate-900" : isPending ? "border-amber-300 bg-tile text-slate-900" : "border-[#d6bc82] bg-tile text-slate-900"}`}
+                  className={`absolute inset-[10%] grid place-items-center rounded-[18%] border text-[clamp(11px,3.7vw,24px)] leading-none shadow-[0_2px_3px_rgba(15,23,42,.3)] ${isAffected && validationStatus === "valid" ? "border-emerald-400 bg-tile text-slate-900" : isAffected && validationStatus === "invalid" ? "border-rose-500 bg-tile text-slate-900" : isPending ? "border-amber-300 bg-tile text-slate-900" : "border-[#d6bc82] bg-tile text-slate-900"}`}
                 >
                   {tile.letter}
                   <small className="absolute bottom-[7%] right-[8%] text-[clamp(5px,1.35vw,10px)] font-bold">

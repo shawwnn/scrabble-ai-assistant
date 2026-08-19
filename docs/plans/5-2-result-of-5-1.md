@@ -1,27 +1,38 @@
-I’ll verify the current source and task scope first, then I’ll either apply only the approved minimal changes or report that the canceled implementation remains untouched.
+I’ll compare the current board highlighting against the requested connected-word behavior, then update the existing validator and board projection so adjacent committed tiles and all tiles in the current move share the correct green/red state.
 
-The source is unchanged: the existing frontend already has the local validator and UI hooks described in the inspection plan, and there is no backend-validation integration to apply. Because the current plan is explicitly report-only and the prior implementation was canceled, I’m leaving all files untouched.
+The plan was not executed: `MoveValidation` still returns only words and score, and `ScrabbleBoard` styles only `isPending` cells. I’m wiring the affected word coordinates through those existing components without changing placement or validation rules.
 
-The current Scrabble frontend is intact and no files were modified.
+The connected-coordinate projection is now in place: valid words collect every occupied position in their horizontal/vertical runs, including committed neighbors, while invalid states still mark the pending tiles red. I’m running type checks and tests next to catch any shape or rendering regressions.
 
-Key existing implementation:
+TypeScript and the existing test suite pass, and Vite accepted the hot update. I’m opening the game route now to verify the updated board projection renders in the live preview.
 
-- **Board state:** `code/client/pages/Game.tsx:14`
-  - `board: Record<string, BoardTile>`
-  - Initialized from `boardFromSeed`
-- **Pending move state:** `code/client/pages/Game.tsx:17`
-  - `pending: Record<string, BoardTile>`
-- **Tile placement/removal:** `code/client/pages/Game.tsx:39`
-  - `placeTile()`
-- **Pending tile movement:** `code/client/pages/Game.tsx:57`
-  - `movePendingTile()`
-- **Validation:** `code/client/lib/game-data.ts:89`
-  - `validateMove(board, pending)`
-  - Returns `{ status, reason, score, words }`
-- **Live validation usage:** `code/client/pages/Game.tsx:33`
-  - Recomputes through `useMemo` whenever `board` or `pending` changes
-- **Submit state:** `code/client/pages/Game.tsx:119`
-  - Disabled unless `validation.status === "valid"`
-- **Visual validation borders and score popout:** `code/client/components/ScrabbleBoard.tsx:53-62`
+The plan was not previously executed. I’ve now implemented the connected-tile highlighting.
 
-The repository has no backend validation endpoint or API integration. Since the current plan was inspection-only and the implementation was canceled, no changes were applied.
+Changes made:
+
+- `code/client/lib/game-data.ts:60`
+  - Added `affectedKeys` to `MoveValidation`.
+  - Valid moves now collect every coordinate belonging to generated horizontal and vertical words.
+  - This includes:
+    - Newly placed tiles
+    - Existing adjacent horizontal tiles
+    - Existing adjacent vertical tiles
+    - Cross-word tiles
+    - Multiple tiles placed in the same direction
+
+- `code/client/pages/Game.tsx:114`
+  - Passes `validation.affectedKeys` into `ScrabbleBoard`.
+
+- `code/client/components/ScrabbleBoard.tsx:18`
+  - Highlights all affected coordinates:
+    - Green borders for valid moves
+    - Red borders for invalid pending moves
+  - Existing committed tiles remain unchanged when they are not part of the current move.
+
+Validation passed:
+
+- `pnpm typecheck`
+- `pnpm test -- --run`
+- Live game route opened successfully at `/games/wordmaster`
+
+The board now highlights the complete connected word structure instead of only the tile placed from the rack.

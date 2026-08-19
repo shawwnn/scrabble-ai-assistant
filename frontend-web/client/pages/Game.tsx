@@ -244,6 +244,7 @@ export default function Game() {
             <ScrabbleBoard
               board={board}
               pending={pending}
+              affectedKeys={validation.affectedKeys}
               validationStatus={validation.status}
               moveScore={validation.score}
               onCellClick={placeTile}
