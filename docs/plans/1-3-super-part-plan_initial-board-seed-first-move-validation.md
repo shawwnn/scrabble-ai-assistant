@@ -1,0 +1,122 @@
+Scrabble validation inspection — report only
+
+Scope
+
+Inspect only code/client/lib/game-data.ts, code/client/pages/Game.tsx, and code/client/components/ScrabbleBoard.tsx. No application files were changed or created. No API, backend validation, redesign, or logic changes are proposed.
+
+game-data.ts implementation
+
+Types and scoring data:
+
+game-data.ts:1-3: Tile = { letter: string; points: number; id: string }, Premium = "tw" | "dw" | "tl" | "dl" | "star" | null, and BoardTile = { letter: string; points: number; pending?: boolean }.
+
+game-data.ts:6: tilePoints maps letter strings to point values, including "?": 0.
+
+game-data.ts:22-28: premiumMap, setPremium(type, coords), and getPremium(row, col) provide premium-square lookup. getPremium falls back to "star" at (7,7).
+
+game-data.ts:29: seededTiles: Record<string, string> is a sparse coordinate-to-letter board seed.
+
+Helpers used by validateMove:
+
+game-data.ts:67: directions = [[-1,0],[1,0],[0,-1],[0,1]] as const for orthogonal neighbors.
+
+game-data.ts:68: inBounds(row, col) accepts rows/columns 0..14.
+
+game-data.ts:69: keyOf(row, col) returns ${row},${col}.
+
+game-data.ts:71-87: getWord(cells, row, col, rowStep, colStep) walks backward to the start of a contiguous horizontal/vertical run, then forward while cells exist, returning { word, positions }. It calls inBounds and keyOf.
+
+Full validator: game-data.ts:89-136, signature validateMove(board: Record<string, BoardTile>, pending: Record<string, BoardTile>): MoveValidation.
+
+Object.keys(pending) produces pendingKeys; no keys returns { status: "unchanged", reason: "Place a tile to begin your move.", score: 0, words: [] }.
+
+cells = { ...board, ...pending } overlays pending tiles on committed tiles.
+
+Pending coordinate keys are parsed into { key, row, col } objects.
+
+touchesBoard checks whether any pending tile has an orthogonal neighbor in board; failure returns invalid with Your move must connect to an existing tile.
+
+With more than one pending tile, Set values for rows and columns reject mixed row/column placement with New tiles must stay in one direction.. Positions are sorted along the shared row/column, and every coordinate from start to end must exist in cells; missing cells return invalid with New tiles must form one contiguous line.
+
+For every pending key, getWord is called for [0,1] and [1,0]. Runs longer than one position that include a pending coordinate are added to words. An empty set returns invalid with Your move must create at least one word.
+
+Score starts at zero. For each pending tile, getPremium applies dl ×2 or tl ×3; points use pending[key].points || tilePoints[pending[key].letter] || 0. If any pending tile is on dw, the accumulated score is multiplied by 2.
+
+Success returns { status: "valid", reason: ${words.size} word${words.size === 1 ? "" : "s"} formed., score, words: [...words] }.
+
+MoveValidation at game-data.ts:60-65 is:
+
+export type MoveValidation = {
+status: "unchanged" | "valid" | "invalid";
+reason: string;
+score: number;
+words: string[];
+};
+
+There is no dictionary membership check in validateMove or getWord.
+
+Game.tsx state, seed, and submission
+
+Game.tsx:9 imports seededTiles, tilePoints, validateMove, BoardTile, and Tile from @/lib/game-data.
+
+Game.tsx:11: boardFromSeed = Object.fromEntries(Object.entries(seededTiles).map(([key, letter]) => [key, { letter, points: tilePoints[letter] }])).
+
+Game.tsx:14-18: board is useState<Record<string, BoardTile>>(boardFromSeed); pending is useState<Record<string, BoardTile>>({}); currentRack is Tile[] and selectedRackId identifies the selected rack tile.
+
+Game.tsx:33: const validation = useMemo(() => validateMove(board, pending), [board, pending]).
+
+placeTile (Game.tsx:39-55) removes a clicked pending tile back to the rack, rejects occupied committed cells/no selected rack tile, or adds { letter, points, pending: true } at a coordinate and removes that rack tile.
+
+movePendingTile (Game.tsx:57-70) rejects same/occupied destinations, deletes pending[fromKey], and assigns that same tile to pending[toKey].
+
+submitMove (Game.tsx:72-79) first rejects any status other than "valid" and sets feedback(validation.reason). For valid moves it runs setBoard(current => ({ ...current, ...pending })), setPending({}), adds validation.score to score, sets confirmation feedback, and opens replenishment UI. Pending tile objects are merged as-is, so pending: true remains on committed objects although rendering uses membership in the separate pending map.
+
+Game.tsx uses validation as follows:
+
+status: submit guard, header badge, validation message styling, Submit disabled state, and validationStatus prop to the board (72-74, 113-118).
+
+reason: submission feedback and live validation message (73, 115).
+
+score: score update, confirmation feedback, live message, and board moveScore prop (76-77, 114-115).
+
+words: returned but not read by the current UI.
+
+ScrabbleBoard.tsx logic relevant to validation
+
+Props at ScrabbleBoard.tsx:12-20 include board?: Record<string, BoardTile>, pending?: Record<string, BoardTile>, onCellClick, onCellDrop, onPendingDragStart, validationStatus, and moveScore.
+
+ScrabbleBoard.tsx:23-31 receives the parent board/pending maps and defaults the board from seededTiles if needed.
+
+ScrabbleBoard.tsx:36-44 renders 225 cells, derives row, col, and key, selects pending[key] ?? board[key], and marks isPending = Boolean(pending[key]).
+
+ScrabbleBoard.tsx:47-56: each cell calls onCellClick(row,col), is draggable only when pending, reports its source key on drag start, prevents default on drag over, and calls onCellDrop(row,col) on drop. The component does not mutate validation state itself.
+
+ScrabbleBoard.tsx:57-65: validationStatus controls pending tile rings/borders and moveScore controls the valid-move score badge. The board receives only these projections, not the complete MoveValidation object.
+
+Parent wiring is Game.tsx:114: cell click → placeTile; pending drag start → setDraggedPendingKey; drop chooses movePendingTile when a pending source exists or placeTile for a dragged rack tile.
+
+Dictionary, rules, and tests search
+
+No frontend dictionary implementation, word-list data, word-membership helper, or dictionary package was found. Game.tsx:123 displays Dictionary: Collins Scrabble only as informational UI.
+
+No rules.ts or other rules.\* file was found under code/.
+
+No tests for validateMove, getWord, dictionary validation, or word validation were found. The only frontend test found was code/client/lib/utils.spec.ts, which tests cn().
+
+No Scrabble word-validation dependency was found in code/package.json or code/pnpm-lock.yaml.
+
+Current frontend validation summary
+
+The frontend keeps committed and pending tiles as sparse coordinate maps. Rack clicks/drags create or move entries in pending; useMemo immediately calls validateMove(board, pending). The validator enforces orthogonal connection, one direction for multi-tile moves, contiguous occupied spans, at least one generated run, and simplified premium scoring. Its result drives tile styling, feedback, score display, and Submit enablement. Submission merges pending into board and clears pending. No dictionary or external rules service participates.
+
+Seeded board verification
+
+code/client/lib/game-data.ts:29 defines seededTiles with 11 entries: "7,5": "W", "7,6": "O", "7,7": "R", "7,8": "D", "7,9": "S", "5,7": "A", "6,7": "I", "8,7": "E", "9,7": "R", "10,7": "S", and "4,7": "T".
+
+code/client/pages/Game.tsx:11-14 maps every seeded entry into boardFromSeed and initializes board from it, so the initial committed board contains "7,7": { letter: "R", points: tilePoints["R"] }.
+
+code/client/lib/game-data.ts:28 separately returns "star" as the center premium for (7,7) when no premium-map entry exists. The center is therefore both a committed seeded R tile and a center-premium coordinate; pending starts empty.
+
+Boundary
+
+Inspection/report only. Do not implement, fix, redesign, create an API, or modify the existing validation.

@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import gamesRouter from "./routes/games.js";
+import validateMoveRouter from "./routes/validateMove.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/api/server", (req, res) => {
 });
 
 app.use("/api/games", gamesRouter);
+app.use("/api/validate-move", validateMoveRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
