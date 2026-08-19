@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Check,
   CircleHelp,
@@ -50,6 +50,7 @@ import {
   type BoardTile,
   type Tile,
 } from "@/lib/game-data";
+import { validateMoveBackend } from "../../shared/api";
 
 const boardFromSeed = Object.fromEntries(
   Object.entries(seededTiles).map(([key, letter]) => [
@@ -86,6 +87,7 @@ export default function Game() {
     () => validateMove(board, pending),
     [board, pending],
   );
+
   const currentMoveTiles = useMemo(() => {
     const cells = { ...board, ...pending };
     const keys = [
@@ -96,6 +98,13 @@ export default function Game() {
       return tile ? [{ key, letter: tile.letter, tile }] : [];
     });
   }, [board, pending, validation.affectedKeys]);
+
+  // added code to backend validation API call
+  useEffect(() => {
+    validateMoveBackend({ board, pending });
+  }, [board, pending]);
+  // added code to backend validation
+
   const counts = useMemo(
     () => getUnseenCounts({ ...board, ...pending }, currentRack, opponentRack),
     [board, pending, currentRack],
@@ -111,6 +120,16 @@ export default function Game() {
     const key = `${row},${col}`;
     if (pending[key]) {
       const tile = pending[key];
+
+      // added code for checking tile removal
+      console.log("TILE REMOVED", {
+        row,
+        col,
+        key,
+        letter: tile.letter,
+      });
+      // added code for checking tile removal
+
       setPending((current) => {
         const next = { ...current };
         delete next[key];
@@ -137,6 +156,16 @@ export default function Game() {
     }
     const tile = currentRack.find((item) => item.id === rackId);
     if (!tile) return;
+
+    // added code for checking tile placement
+    console.log("TILE PLACED", {
+      row,
+      col,
+      key,
+      letter: tile.letter,
+    });
+    // added code for checking tile placement
+
     setPending((current) => ({
       ...current,
       [key]: { letter: tile.letter, points: tile.points, pending: true },
@@ -150,6 +179,16 @@ export default function Game() {
     if (fromKey === toKey || board[toKey] || pending[toKey]) return;
     const tile = pending[fromKey];
     if (!tile) return;
+
+    // added code for checking tile move to another tile
+    console.log("TILE MOVED", {
+      row,
+      col,
+      key: toKey,
+      letter: tile.letter,
+    });
+    // added code for checking tile move to another tile
+
     setPending((current) => {
       const next = { ...current };
       delete next[fromKey];
@@ -159,7 +198,6 @@ export default function Game() {
     setDraggedPendingKey(null);
     setFeedback("Pending tile moved. The move was validated again.");
   };
-
   const submitMove = () => {
     if (validation.status !== "valid") {
       setFeedback(validation.reason);
@@ -350,6 +388,7 @@ export default function Game() {
               <Sparkles className="h-4 w-4" />{" "}
               {aiLoading ? "Analyzing..." : "AI Hint"}
             </Button>
+
             <Button
               className="h-11 bg-primary px-2 text-xs font-extrabold hover:bg-primary/90 sm:px-5 sm:text-sm"
               disabled={validation.status !== "valid"}
