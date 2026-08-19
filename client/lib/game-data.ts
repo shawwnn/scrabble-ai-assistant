@@ -62,6 +62,7 @@ export type MoveValidation = {
   reason: string;
   score: number;
   words: string[];
+  affectedKeys: string[];
 };
 
 const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]] as const;
@@ -88,19 +89,19 @@ function getWord(cells: Record<string, BoardTile>, row: number, col: number, row
 
 export function validateMove(board: Record<string, BoardTile>, pending: Record<string, BoardTile>): MoveValidation {
   const pendingKeys = Object.keys(pending);
-  if (!pendingKeys.length) return { status: "unchanged", reason: "Place a tile to begin your move.", score: 0, words: [] };
+  if (!pendingKeys.length) return { status: "unchanged", reason: "Place a tile to begin your move.", score: 0, words: [], affectedKeys: [] };
   const cells = { ...board, ...pending };
   const positions = pendingKeys.map((key) => {
     const [row, col] = key.split(",").map(Number);
     return { key, row, col };
   });
   const touchesBoard = positions.some(({ row, col }) => directions.some(([dr, dc]) => board[keyOf(row + dr, col + dc)]));
-  if (!touchesBoard) return { status: "invalid", reason: "Your move must connect to an existing tile.", score: 0, words: [] };
+  if (!touchesBoard) return { status: "invalid", reason: "Your move must connect to an existing tile.", score: 0, words: [], affectedKeys: pendingKeys };
 
   if (positions.length > 1) {
     const rows = new Set(positions.map(({ row }) => row));
     const cols = new Set(positions.map(({ col }) => col));
-    if (rows.size > 1 && cols.size > 1) return { status: "invalid", reason: "New tiles must stay in one direction.", score: 0, words: [] };
+    if (rows.size > 1 && cols.size > 1) return { status: "invalid", reason: "New tiles must stay in one direction.", score: 0, words: [], affectedKeys: pendingKeys };
     const isHorizontal = rows.size === 1;
     const ordered = [...positions].sort((a, b) => isHorizontal ? a.col - b.col : a.row - b.row);
     const start = isHorizontal ? ordered[0].col : ordered[0].row;
@@ -108,19 +109,23 @@ export function validateMove(board: Record<string, BoardTile>, pending: Record<s
     for (let offset = start; offset <= end; offset += 1) {
       const row = isHorizontal ? ordered[0].row : offset;
       const col = isHorizontal ? offset : ordered[0].col;
-      if (!cells[keyOf(row, col)]) return { status: "invalid", reason: "New tiles must form one contiguous line.", score: 0, words: [] };
+      if (!cells[keyOf(row, col)]) return { status: "invalid", reason: "New tiles must form one contiguous line.", score: 0, words: [], affectedKeys: pendingKeys };
     }
   }
 
   const words = new Set<string>();
+  const affectedKeys = new Set<string>();
   pendingKeys.forEach((key) => {
     const [row, col] = key.split(",").map(Number);
     for (const [dr, dc] of [[0, 1], [1, 0]] as const) {
       const word = getWord(cells, row, col, dr, dc);
-      if (word.positions.length > 1 && word.positions.some((position) => pending[position])) words.add(word.word);
+      if (word.positions.length > 1 && word.positions.some((position) => pending[position])) {
+        words.add(word.word);
+        word.positions.forEach((position) => affectedKeys.add(position));
+      }
     }
   });
-  if (!words.size) return { status: "invalid", reason: "Your move must create at least one word.", score: 0, words: [] };
+  if (!words.size) return { status: "invalid", reason: "Your move must create at least one word.", score: 0, words: [], affectedKeys: pendingKeys };
 
   let score = 0;
   pendingKeys.forEach((key) => {
@@ -133,5 +138,5 @@ export function validateMove(board: Record<string, BoardTile>, pending: Record<s
     const [row, col] = key.split(",").map(Number);
     return getPremium(row, col) === "dw";
   }) ? 2 : 1;
-  return { status: "valid", reason: `${words.size} word${words.size === 1 ? "" : "s"} formed.`, score, words: [...words] };
+  return { status: "valid", reason: `${words.size} word${words.size === 1 ? "" : "s"} formed.`, score, words: [...words], affectedKeys: [...affectedKeys] };
 }
