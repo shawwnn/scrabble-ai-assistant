@@ -31,6 +31,14 @@ export default function Game() {
   const [score, setScore] = useState(301);
 
   const validation = useMemo(() => validateMove(board, pending), [board, pending]);
+  const currentMoveTiles = useMemo(() => {
+    const cells = { ...board, ...pending };
+    const keys = [...new Set([...validation.affectedKeys, ...Object.keys(pending)])];
+    return keys.flatMap((key) => {
+      const tile = cells[key];
+      return tile ? [{ key, letter: tile.letter, tile }] : [];
+    });
+  }, [board, pending, validation.affectedKeys]);
   const counts = useMemo(() => getUnseenCounts({ ...board, ...pending }, currentRack, opponentRack), [board, pending, currentRack]);
   const remaining = Object.values(counts).reduce((sum, count) => sum + count, 0);
   const selectedMove = moveHistory.find((move) => move.id === selectedMoveId);
