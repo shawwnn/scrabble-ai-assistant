@@ -1,11 +1,11 @@
-export type Tile = { letter: string; points: number; id: string };
+export type Tile = { letter: string; points: number; id: string; wildcard?: boolean };
 export type Premium = "tw" | "dw" | "tl" | "dl" | "star" | null;
-export type BoardTile = { letter: string; points: number; pending?: boolean };
+export type BoardTile = { letter: string; points: number; pending?: boolean; wildcard?: boolean };
 export type GameSummary = { id: string; opponent: string; opponentInitial: string; score: string; turn: "Your turn" | "Their turn"; updated: string; progress: number };
 
 export const tilePoints: Record<string, number> = { A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4, I: 1, J: 8, K: 5, L: 1, M: 3, N: 1, O: 1, P: 3, Q: 10, R: 1, S: 1, T: 1, U: 1, V: 4, W: 4, X: 8, Y: 4, Z: 10, "?": 0 };
 export const standardTileDistribution: Record<string, number> = { A: 9, B: 2, C: 2, D: 4, E: 12, F: 2, G: 3, H: 2, I: 9, J: 1, K: 1, L: 4, M: 2, N: 6, O: 8, P: 2, Q: 1, R: 6, S: 4, T: 6, U: 4, V: 2, W: 2, X: 1, Y: 2, Z: 1, "?": 2 };
-export const rack: Tile[] = ["A", "T", "R", "E", "L", "O", "N"].map((letter, i) => ({ letter, points: tilePoints[letter], id: `${letter}-${i}` }));
+export const rack: Tile[] = ["A", "T", "R", "E", "L", "O", "?"].map((letter, i) => ({ letter, points: tilePoints[letter], id: `${letter}-${i}`, ...(letter === "?" ? { wildcard: true } : {}) }));
 export const opponentRack = ["J", "U", "D", "O", "R", "?", "?"];
 export const games: GameSummary[] = [
   { id: "wordmaster", opponent: "WordMaster", opponentInitial: "W", score: "301–289", turn: "Your turn", updated: "12 min ago", progress: 68 },
@@ -46,15 +46,21 @@ export const moveHistory = [
 
 export function getUnseenCounts(board: Record<string, BoardTile>, playerRack: Tile[], otherRack: string[]) {
   const counts = { ...standardTileDistribution };
-  Object.values(board).forEach(({ letter }) => { counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1); });
-  playerRack.forEach(({ letter }) => { counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1); });
+  Object.values(board).forEach(({ letter, wildcard }) => {
+    const inventoryLetter = wildcard ? "?" : letter;
+    counts[inventoryLetter] = Math.max(0, (counts[inventoryLetter] ?? 0) - 1);
+  });
+  playerRack.forEach(({ letter, wildcard }) => {
+    const inventoryLetter = wildcard ? "?" : letter;
+    counts[inventoryLetter] = Math.max(0, (counts[inventoryLetter] ?? 0) - 1);
+  });
   otherRack.forEach((letter) => { counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1); });
   return counts;
 }
 
 export function replacementTiles(count: number, counts: Record<string, number>): Tile[] {
   const available = Object.entries(counts).flatMap(([letter, quantity]) => Array.from({ length: quantity }, () => letter));
-  return available.slice(0, count).map((letter, index) => ({ letter, points: tilePoints[letter], id: `${letter}-replacement-${Date.now()}-${index}` }));
+  return available.slice(0, count).map((letter, index) => ({ letter, points: tilePoints[letter], id: `${letter}-replacement-${Date.now()}-${index}`, ...(letter === "?" ? { wildcard: true } : {}) }));
 }
 
 export type MoveValidation = {
