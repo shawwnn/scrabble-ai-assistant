@@ -100,9 +100,13 @@ export default function Game() {
   }, [board, pending, validation.affectedKeys]);
 
   // added code to backend validation API call
+  // 2. new way of validating
   useEffect(() => {
-    validateMoveBackend({ board, pending });
-  }, [board, pending]);
+    console.log("CURRENT MOVE TILES UPDATED:", currentMoveTiles);
+
+    validateMoveBackend(currentMoveTiles);
+  }, [currentMoveTiles]);
+  // 2. new way of validating
   // added code to backend validation
 
   const counts = useMemo(
@@ -120,15 +124,6 @@ export default function Game() {
     const key = `${row},${col}`;
     if (pending[key]) {
       const tile = pending[key];
-
-      // added code for checking tile removal
-      console.log("TILE REMOVED", {
-        row,
-        col,
-        key,
-        letter: tile.letter,
-      });
-      // added code for checking tile removal
 
       setPending((current) => {
         const next = { ...current };
@@ -157,15 +152,6 @@ export default function Game() {
     const tile = currentRack.find((item) => item.id === rackId);
     if (!tile) return;
 
-    // added code for checking tile placement
-    console.log("TILE PLACED", {
-      row,
-      col,
-      key,
-      letter: tile.letter,
-    });
-    // added code for checking tile placement
-
     setPending((current) => ({
       ...current,
       [key]: { letter: tile.letter, points: tile.points, pending: true },
@@ -179,15 +165,6 @@ export default function Game() {
     if (fromKey === toKey || board[toKey] || pending[toKey]) return;
     const tile = pending[fromKey];
     if (!tile) return;
-
-    // added code for checking tile move to another tile
-    console.log("TILE MOVED", {
-      row,
-      col,
-      key: toKey,
-      letter: tile.letter,
-    });
-    // added code for checking tile move to another tile
 
     setPending((current) => {
       const next = { ...current };
