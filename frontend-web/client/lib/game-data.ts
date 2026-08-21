@@ -1,6 +1,16 @@
-export type Tile = { letter: string; points: number; id: string };
+export type Tile = {
+  letter: string;
+  points: number;
+  id: string;
+  wildcard?: boolean;
+};
 export type Premium = "tw" | "dw" | "tl" | "dl" | "star" | null;
-export type BoardTile = { letter: string; points: number; pending?: boolean };
+export type BoardTile = {
+  letter: string;
+  points: number;
+  pending?: boolean;
+  wildcard?: boolean;
+};
 export type GameSummary = {
   id: string;
   opponent: string;
@@ -69,9 +79,15 @@ export const standardTileDistribution: Record<string, number> = {
   Z: 1,
   "?": 2,
 };
-export const rack: Tile[] = ["A", "T", "R", "E", "L", "O", "N"].map(
-  (letter, i) => ({ letter, points: tilePoints[letter], id: `${letter}-${i}` }),
+export const rack: Tile[] = ["A", "T", "R", "E", "L", "O", "?"].map(
+  (letter, i) => ({
+    letter,
+    points: tilePoints[letter],
+    id: `${letter}-${i}`,
+    ...(letter === "?" ? { wildcard: true } : {}),
+  }),
 );
+
 export const opponentRack = ["J", "U", "D", "O", "R", "?", "?"];
 export const games: GameSummary[] = [
   {
@@ -323,11 +339,13 @@ export function getUnseenCounts(
   otherRack: string[],
 ) {
   const counts = { ...standardTileDistribution };
-  Object.values(board).forEach(({ letter }) => {
-    counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1);
+  Object.values(board).forEach(({ letter, wildcard }) => {
+    const inventoryLetter = wildcard ? "?" : letter;
+    counts[inventoryLetter] = Math.max(0, (counts[inventoryLetter] ?? 0) - 1);
   });
-  playerRack.forEach(({ letter }) => {
-    counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1);
+  playerRack.forEach(({ letter, wildcard }) => {
+    const inventoryLetter = wildcard ? "?" : letter;
+    counts[inventoryLetter] = Math.max(0, (counts[inventoryLetter] ?? 0) - 1);
   });
   otherRack.forEach((letter) => {
     counts[letter] = Math.max(0, (counts[letter] ?? 0) - 1);
@@ -348,6 +366,7 @@ export function replacementTiles(
       letter,
       points: tilePoints[letter],
       id: `${letter}-replacement-${Date.now()}-${index}`,
+      ...(letter === "?" ? { wildcard: true } : {}),
     }));
 }
 

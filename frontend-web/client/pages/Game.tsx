@@ -70,6 +70,7 @@ export default function Game() {
   const [exchangeOpen, setExchangeOpen] = useState(false);
   const [passOpen, setPassOpen] = useState(false);
   const [replenishOpen, setReplenishOpen] = useState(false);
+  const [replenishCount, setReplenishCount] = useState(0);
   const [selectedMoveId, setSelectedMoveId] = useState<string | null>(null);
   const [draggedRackId, setDraggedRackId] = useState<string | null>(null);
   const [draggedPendingKey, setDraggedPendingKey] = useState<string | null>(
@@ -77,6 +78,7 @@ export default function Game() {
   );
   const [exchangeSelection, setExchangeSelection] = useState<string[]>([]);
   const [manualSelection, setManualSelection] = useState<string[]>([]);
+  const [wildcardKey, setWildcardKey] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [feedback, setFeedback] = useState(
     "Choose a rack tile, then place it on the board.",
@@ -118,13 +120,16 @@ export default function Game() {
     0,
   );
   const selectedMove = moveHistory.find((move) => move.id === selectedMoveId);
-  const drawCount = Object.keys(pending).length;
+  const drawCount = replenishCount;
 
   const placeTile = (row: number, col: number, rackId = selectedRackId) => {
     const key = `${row},${col}`;
     if (pending[key]) {
       const tile = pending[key];
-
+      if (tile.wildcard && tile.letter === "?") {
+        setWildcardKey(key);
+        return;
+      }
       setPending((current) => {
         const next = { ...current };
         delete next[key];
@@ -133,9 +138,10 @@ export default function Game() {
       setCurrentRack((current) => [
         ...current,
         {
-          letter: tile.letter,
+          letter: tile.wildcard ? "?" : tile.letter,
           points: tile.points,
           id: `${tile.letter}-returned-${Date.now()}`,
+          ...(tile.wildcard ? { wildcard: true } : {}),
         },
       ]);
       setFeedback("Pending tile removed. The move will be checked again.");
@@ -151,13 +157,18 @@ export default function Game() {
     }
     const tile = currentRack.find((item) => item.id === rackId);
     if (!tile) return;
-
     setPending((current) => ({
       ...current,
-      [key]: { letter: tile.letter, points: tile.points, pending: true },
+      [key]: {
+        letter: tile.letter,
+        points: tile.points,
+        pending: true,
+        ...(tile.wildcard ? { wildcard: true } : {}),
+      },
     }));
     setCurrentRack((current) => current.filter((item) => item.id !== rackId));
     setSelectedRackId(null);
+    if (tile.wildcard) setWildcardKey(key);
   };
 
   const movePendingTile = (fromKey: string, row: number, col: number) => {
@@ -172,14 +183,28 @@ export default function Game() {
       next[toKey] = tile;
       return next;
     });
+    if (wildcardKey === fromKey) setWildcardKey(toKey);
     setDraggedPendingKey(null);
     setFeedback("Pending tile moved. The move was validated again.");
   };
+
+  const chooseWildcardLetter = (letter: string) => {
+    if (!wildcardKey) return;
+    setPending((current) => {
+      const tile = current[wildcardKey];
+      if (!tile) return current;
+      return { ...current, [wildcardKey]: { ...tile, letter } };
+    });
+    setWildcardKey(null);
+    setFeedback(`Blank tile set to ${letter}. The move will be checked again.`);
+  };
+
   const submitMove = () => {
     if (validation.status !== "valid") {
       setFeedback(validation.reason);
       return;
     }
+    setReplenishCount(Object.keys(pending).length);
     setBoard((current) => ({ ...current, ...pending }));
     setPending({});
     setScore((current) => current + validation.score);
@@ -201,6 +226,7 @@ export default function Game() {
     const drawn = replacementTiles(drawCount, counts);
     setCurrentRack((current) => [...current, ...drawn].slice(0, 7));
     setReplenishOpen(false);
+    setReplenishCount(0);
     setFeedback(
       `${drawn.length} tile${drawn.length === 1 ? "" : "s"} drawn from the remaining bag.`,
     );
@@ -211,10 +237,12 @@ export default function Game() {
       letter,
       points: tilePoints[letter],
       id: `${letter}-picked-${Date.now()}-${index}`,
+      ...(letter === "?" ? { wildcard: true } : {}),
     }));
     setCurrentRack((current) => [...current, ...selected].slice(0, 7));
     setManualSelection([]);
     setReplenishOpen(false);
+    setReplenishCount(0);
     setFeedback("Your rack has been replenished from the tile bag.");
   };
 
@@ -404,11 +432,13 @@ export default function Game() {
               setCurrentRack((current) => [
                 ...current,
                 {
-                  letter: tile.letter,
+                  letter: tile.wildcard ? "?" : tile.letter,
                   points: tile.points,
                   id: `${tile.letter}-undo-${Date.now()}`,
+                  ...(tile.wildcard ? { wildcard: true } : {}),
                 },
               ]);
+              if (wildcardKey === key) setWildcardKey(null);
             }}
           >
             <Undo2 className="h-4 w-4" /> Undo last tile
@@ -563,6 +593,36 @@ export default function Game() {
           </div>
         </SheetContent>
       </Sheet>
+      <Dialog
+        open={Boolean(wildcardKey)}
+        onOpenChange={(open) => {
+          if (!open) setWildcardKey(null);
+        }}
+      >
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Choose a blank tile letter</DialogTitle>
+            <DialogDescription>
+              Select the letter this blank tile represents for your current
+              move.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: 26 }, (_, index) =>
+              String.fromCharCode(65 + index),
+            ).map((letter) => (
+              <Button
+                key={letter}
+                variant="outline"
+                className="h-10 px-0 text-lg font-extrabold"
+                onClick={() => chooseWildcardLetter(letter)}
+              >
+                {letter}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog open={replenishOpen} onOpenChange={setReplenishOpen}>
         <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl">
           <DialogHeader>
@@ -622,6 +682,7 @@ export default function Game() {
             <AlertDialogAction
               onClick={() => {
                 setPending({});
+                setWildcardKey(null);
                 setPassOpen(false);
               }}
             >
