@@ -7,6 +7,7 @@ export type MoveTile = {
 export type FormedWord = {
   word: string;
   positions: string[];
+  tiles: MoveTile[];
 };
 
 export function getWordsFromMove(moveTiles: MoveTile[]): FormedWord[] {
@@ -37,6 +38,7 @@ export function getWordsFromMove(moveTiles: MoveTile[]): FormedWord[] {
       }
 
       const positions: string[] = [];
+      const tiles: MoveTile[] = [];
       let word = "";
 
       while (cells.has(`${startRow},${startCol}`)) {
@@ -44,16 +46,16 @@ export function getWordsFromMove(moveTiles: MoveTile[]): FormedWord[] {
         const currentTile = cells.get(key)!;
 
         positions.push(key);
+        tiles.push(currentTile);
         word += currentTile.letter;
 
         startRow += rowStep;
         startCol += colStep;
       }
 
-      const hasPendingTile = positions.some((position) => {
-        const currentTile = cells.get(position);
-        return currentTile?.tile?.pending === true;
-      });
+      const hasPendingTile = tiles.some(
+        (currentTile) => currentTile.tile?.pending === true,
+      );
 
       if (positions.length >= 2 && hasPendingTile && !seen.has(word)) {
         seen.add(word);
@@ -61,6 +63,7 @@ export function getWordsFromMove(moveTiles: MoveTile[]): FormedWord[] {
         words.push({
           word,
           positions,
+          tiles,
         });
       }
     }
