@@ -1,78 +1,70 @@
-// import type { Board } from "./rules.js";
+export type MoveTile = {
+  key: string;
+  letter: string;
+  tile: Record<string, unknown>;
+};
 
-// const BOARD_SIZE = 15;
+export type FormedWord = {
+  word: string;
+  positions: string[];
+};
 
-// const inBounds = (row: number, col: number) => {
-//   return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
-// };
+export function getWordsFromMove(moveTiles: MoveTile[]): FormedWord[] {
+  const cells = new Map<string, MoveTile>();
 
-// const keyOf = (row: number, col: number) => {
-//   return `${row},${col}`;
-// };
+  for (const tile of moveTiles) {
+    cells.set(tile.key, tile);
+  }
 
-// function getWord(
-//   cells: Board,
-//   row: number,
-//   col: number,
-//   rowStep: number,
-//   colStep: number,
-// ) {
-//   let startRow = row;
-//   let startCol = col;
+  const words: FormedWord[] = [];
+  const seen = new Set<string>();
 
-//   while (
-//     inBounds(startRow - rowStep, startCol - colStep) &&
-//     cells[keyOf(startRow - rowStep, startCol - colStep)]
-//   ) {
-//     startRow -= rowStep;
-//     startCol -= colStep;
-//   }
+  const directions: [number, number][] = [
+    [0, 1],
+    [1, 0],
+  ];
 
-//   const positions: string[] = [];
-//   let word = "";
+  for (const tile of moveTiles) {
+    const [row, col] = tile.key.split(",").map(Number) as [number, number];
 
-//   while (inBounds(startRow, startCol)) {
-//     const tile = cells[keyOf(startRow, startCol)];
+    for (const [rowStep, colStep] of directions) {
+      let startRow = row;
+      let startCol = col;
 
-//     if (!tile) {
-//       break;
-//     }
+      while (cells.has(`${startRow - rowStep},${startCol - colStep}`)) {
+        startRow -= rowStep;
+        startCol -= colStep;
+      }
 
-//     positions.push(keyOf(startRow, startCol));
-//     word += tile.letter;
+      const positions: string[] = [];
+      let word = "";
 
-//     startRow += rowStep;
-//     startCol += colStep;
-//   }
+      while (cells.has(`${startRow},${startCol}`)) {
+        const key = `${startRow},${startCol}`;
+        const currentTile = cells.get(key)!;
 
-//   return { word, positions };
-// }
+        positions.push(key);
+        word += currentTile.letter;
 
-// export function getWordsFromMove(board: Board, pending: Board): string[] {
-//   const cells: Board = {
-//     ...board,
-//     ...pending,
-//   };
+        startRow += rowStep;
+        startCol += colStep;
+      }
 
-//   const words = new Set<string>();
+      const hasPendingTile = positions.some((position) => {
+        const currentTile = cells.get(position);
+        return currentTile?.tile?.pending === true;
+      });
 
-//   Object.keys(pending).forEach((key) => {
-//     const [row, col] = key.split(",").map(Number) as [number, number];
+      if (positions.length >= 2 && hasPendingTile && !seen.has(word)) {
+        seen.add(word);
 
-//     for (const [dr, dc] of [
-//       [0, 1],
-//       [1, 0],
-//     ] as const) {
-//       const word = getWord(cells, row, col, dr, dc);
+        words.push({
+          word,
+          positions,
+        });
+      }
+    }
+  }
 
-//       if (
-//         word.positions.length > 1 &&
-//         word.positions.some((position) => pending[position])
-//       ) {
-//         words.add(word.word);
-//       }
-//     }
-//   });
-
-//   return [...words];
-// }
+  return words;
+}

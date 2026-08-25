@@ -4,6 +4,12 @@ import { fileURLToPath } from "node:url";
 
 export type DictionaryName = "US" | "UK";
 
+export type DictionaryResult = {
+  valid: boolean;
+  invalidWords: string[];
+  dictionary: DictionaryName;
+};
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -15,13 +21,17 @@ const dictionaryPaths: Record<DictionaryName, string> = {
 const dictionaries: Partial<Record<DictionaryName, Set<string>>> = {};
 
 function parseUS(contents: string): Set<string> {
-  return new Set(
-    contents
-      .split(/\r?\n/)
-      .map((line) => line.trim().split(/\s+/)[0])
-      .filter(Boolean)
-      .map((word) => word.toUpperCase()),
-  );
+  const words = new Set<string>();
+
+  for (const line of contents.split(/\r?\n/)) {
+    const word = line.trim().split(/\s+/)[0];
+
+    if (word) {
+      words.add(word.toUpperCase());
+    }
+  }
+
+  return words;
 }
 
 function parseUK(contents: string): Set<string> {
@@ -68,4 +78,30 @@ export function isWordValid(name: DictionaryName, word: string): boolean {
   }
 
   return dictionary.has(word.trim().toUpperCase());
+}
+
+/**
+ * Validate all words extracted from the current move.
+ *
+ * Input:
+ * ["ES", "OR", "AEO"]
+ *
+ * Output:
+ * {
+ *   valid: false,
+ *   invalidWords: ["AEO"],
+ *   dictionary: "UK"
+ * }
+ */
+export function checkWords(
+  name: DictionaryName,
+  words: string[],
+): DictionaryResult {
+  const invalidWords = words.filter((word: string) => !isWordValid(name, word));
+
+  return {
+    valid: invalidWords.length === 0,
+    invalidWords,
+    dictionary: name,
+  };
 }
