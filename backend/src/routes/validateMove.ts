@@ -1,7 +1,10 @@
+// backend / src / routes / validateMove.ts;
+
 import { Router } from "express";
 
 import { getWordsFromMove } from "../game/words.js";
 import { checkWords, type DictionaryName } from "../game/dictionary.js";
+import { scoreMove } from "../game/scoring.js";
 
 const router = Router();
 
@@ -25,7 +28,7 @@ router.post("/", (req, res) => {
     }),
   );
 
-  console.log("BACKEND RECEIVED:", moveTiles);
+  console.log("BACKEND move tiles RECEIVED:", moveTiles);
 
   const formedWords = getWordsFromMove(moveTiles);
 
@@ -39,10 +42,28 @@ router.post("/", (req, res) => {
 
   console.log("DICTIONARY RESULT:", result);
 
-  res.json({
-    status: result.valid ? "valid" : "invalid",
+  if (!result.valid) {
+    return res.json({
+      status: "invalid",
+      totalProjectedScore: 0,
+      words: formedWords,
+      invalidWords: result.invalidWords,
+      reason: `Some words are not valid in the ${result.dictionary} dictionary.`,
+      dictionary: result.dictionary,
+    });
+  }
+
+  // Dictionary is valid → now calculate score
+  const scoreResult = scoreMove(formedWords);
+
+  console.log("SCORING RESULT:", scoreResult);
+
+  return res.json({
+    status: "valid",
+    totalProjectedScore: scoreResult.totalProjectedScore,
     words: formedWords,
-    invalidWords: result.invalidWords,
+    invalidWords: [],
+    reason: null,
     dictionary: result.dictionary,
   });
 });
