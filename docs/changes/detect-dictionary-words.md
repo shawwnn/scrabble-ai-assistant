@@ -1,6 +1,4 @@
-Yes. Based on the three files you provided, the implementation is already structurally close. The missing piece is mainly **finishing the validation response and making the word-extraction → dictionary-check pipeline explicit and testable**.
-
-## Implementation Plan
+## Detect Dictionary Words - Implementation Plan
 
 ### Target flow
 
