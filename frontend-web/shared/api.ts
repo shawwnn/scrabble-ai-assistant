@@ -1,3 +1,5 @@
+// frontend-web/shared/api.ts
+
 /**
  * Shared code between client and server
  * Useful to share types between client and server

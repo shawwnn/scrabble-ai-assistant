@@ -1,3 +1,5 @@
+// frontend-web/client/components/ScrabbleBoard.tsx
+
 import {
   getPremium,
   seededTiles,
