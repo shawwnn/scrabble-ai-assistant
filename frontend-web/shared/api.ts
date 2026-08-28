@@ -13,6 +13,10 @@ export interface DemoResponse {
   message: string;
 }
 
+////
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 // 2. new way of validating
 type CurrentMoveTile = {
   key: string;
@@ -21,7 +25,7 @@ type CurrentMoveTile = {
 };
 
 export async function validateMoveBackend(currentMoveTiles: CurrentMoveTile[]) {
-  const response = await fetch("http://localhost:3000/api/validate-move", {
+  const response = await fetch(`${API_URL}/api/validate-move`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ currentMoveTiles }),
