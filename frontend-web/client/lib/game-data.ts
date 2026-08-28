@@ -1,3 +1,5 @@
+// frontend-web/client/lib/game-data.ts
+
 export type Tile = {
   letter: string;
   points: number;
@@ -360,14 +362,12 @@ export function replacementTiles(
   const available = Object.entries(counts).flatMap(([letter, quantity]) =>
     Array.from({ length: quantity }, () => letter),
   );
-  return available
-    .slice(0, count)
-    .map((letter, index) => ({
-      letter,
-      points: tilePoints[letter],
-      id: `${letter}-replacement-${Date.now()}-${index}`,
-      ...(letter === "?" ? { wildcard: true } : {}),
-    }));
+  return available.slice(0, count).map((letter, index) => ({
+    letter,
+    points: tilePoints[letter],
+    id: `${letter}-replacement-${Date.now()}-${index}`,
+    ...(letter === "?" ? { wildcard: true } : {}),
+  }));
 }
 
 export type MoveValidation = {

@@ -1,3 +1,5 @@
+// frontend-web/client/pages/Game.tsx
+
 import { useMemo, useState, useEffect } from "react";
 import {
   Check,
@@ -51,6 +53,7 @@ import {
   type Tile,
 } from "@/lib/game-data";
 import { validateMoveBackend } from "../../shared/api";
+import { useMoveValidation } from "@shared/integrations/useMoveValidation";
 
 const boardFromSeed = Object.fromEntries(
   Object.entries(seededTiles).map(([key, letter]) => [
@@ -101,14 +104,19 @@ export default function Game() {
     });
   }, [board, pending, validation.affectedKeys]);
 
-  // added code to backend validation API call
-  // 2. new way of validating
-  useEffect(() => {
-    console.log("CURRENT MOVE TILES UPDATED:", currentMoveTiles);
+  // added custom hook to handle JSON Response from the backend validation API call
+  const moveValidation = useMoveValidation({
+    currentMoveTiles,
+    localValidation: validation,
+  });
+  // added custom hook to handle JSON Response from the backend validation API call
 
-    validateMoveBackend(currentMoveTiles);
-  }, [currentMoveTiles]);
-  // 2. new way of validating
+  // added code to backend validation API call
+  // useEffect(() => {
+  //   console.log("CURRENT MOVE TILES UPDATED:", currentMoveTiles);
+
+  //   validateMoveBackend(currentMoveTiles);
+  // }, [currentMoveTiles]);
   // added code to backend validation
 
   const counts = useMemo(
@@ -298,8 +306,13 @@ export default function Game() {
               board={board}
               pending={pending}
               affectedKeys={validation.affectedKeys}
-              validationStatus={validation.status}
-              moveScore={validation.score}
+              // Backend-aware validation overrides the local validation UI state.
+              // validationStatus={validation.status}
+              // moveScore={validation.score}
+
+              validationStatus={moveValidation.status}
+              moveScore={moveValidation.moveScore}
+              // Backend-aware validation overrides the local validation UI state.
               onCellClick={placeTile}
               onPendingDragStart={setDraggedPendingKey}
               onCellDrop={(row, col) => {
