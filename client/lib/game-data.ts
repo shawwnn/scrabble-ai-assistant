@@ -60,7 +60,7 @@ export function getUnseenCounts(board: Record<string, BoardTile>, playerRack: Ti
 
 export function replacementTiles(count: number, counts: Record<string, number>): Tile[] {
   const available = Object.entries(counts).flatMap(([letter, quantity]) => Array.from({ length: quantity }, () => letter));
-  return available.slice(0, count).map((letter, index) => ({ letter, points: tilePoints[letter], id: `${letter}-replacement-${Date.now()}-${index}`, ...(letter === "?" ? { wildcard: true } : {}) }));
+  return [...available].sort(() => Math.random() - 0.5).slice(0, count).map((letter, index) => ({ letter, points: tilePoints[letter], id: `${letter}-replacement-${Date.now()}-${index}`, ...(letter === "?" ? { wildcard: true } : {}) }));
 }
 
 export type MoveValidation = {
@@ -101,8 +101,10 @@ export function validateMove(board: Record<string, BoardTile>, pending: Record<s
     const [row, col] = key.split(",").map(Number);
     return { key, row, col };
   });
+  const boardHasTiles = Object.keys(board).length > 0;
   const touchesBoard = positions.some(({ row, col }) => directions.some(([dr, dc]) => board[keyOf(row + dr, col + dc)]));
-  if (!touchesBoard) return { status: "invalid", reason: "Your move must connect to an existing tile.", score: 0, words: [], affectedKeys: pendingKeys };
+  if (!boardHasTiles && !pending["7,7"]) return { status: "invalid", reason: "Your opening move must cover the center square.", score: 0, words: [], affectedKeys: pendingKeys };
+  if (boardHasTiles && !touchesBoard) return { status: "invalid", reason: "Your move must connect to an existing tile.", score: 0, words: [], affectedKeys: pendingKeys };
 
   if (positions.length > 1) {
     const rows = new Set(positions.map(({ row }) => row));
