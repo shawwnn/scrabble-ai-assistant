@@ -43,9 +43,7 @@ import {
   getUnseenCounts,
   moveHistory,
   opponentRack,
-  rack as initialRack,
   replacementTiles,
-  seededTiles,
   suggestions,
   tilePoints,
   validateMove,
@@ -55,16 +53,10 @@ import {
 import { validateMoveBackend } from "../../shared/api";
 import { useMoveValidation } from "@shared/integrations/useMoveValidation";
 
-const boardFromSeed = Object.fromEntries(
-  Object.entries(seededTiles).map(([key, letter]) => [
-    key,
-    { letter, points: tilePoints[letter] },
-  ]),
-);
-
 export default function Game() {
-  const [board, setBoard] = useState<Record<string, BoardTile>>(boardFromSeed);
-  const [currentRack, setCurrentRack] = useState<Tile[]>(initialRack);
+  const [board, setBoard] = useState<Record<string, BoardTile>>({});
+  const [moveMode, setMoveMode] = useState<"first" | "second" | null>(null);
+  const [currentRack, setCurrentRack] = useState<Tile[]>([]);
   const [selectedRackId, setSelectedRackId] = useState<string | null>(null);
   const [pending, setPending] = useState<Record<string, BoardTile>>({});
   const [bagOpen, setBagOpen] = useState(false);
@@ -128,9 +120,30 @@ export default function Game() {
     0,
   );
   const selectedMove = moveHistory.find((move) => move.id === selectedMoveId);
+
+  const activePersona =
+    moveMode === "first"
+      ? "Q with U"
+      : moveMode === "second"
+        ? "John Doe"
+        : "No persona selected";
+  const activeMoveLabel =
+    moveMode === "first"
+      ? "First Move"
+      : moveMode === "second"
+        ? "Second Move / Opponent"
+        : "Choose a move position";
+
   const drawCount = replenishCount;
 
   const placeTile = (row: number, col: number, rackId = selectedRackId) => {
+    if (!Object.keys(board).length && !moveMode) {
+      setFeedback(
+        "Choose First Move or Second Move / Opponent before placing tiles.",
+      );
+      return;
+    }
+
     const key = `${row},${col}`;
     if (pending[key]) {
       const tile = pending[key];
@@ -230,6 +243,12 @@ export default function Game() {
     }, 350);
   };
 
+  const openRackSelection = () => {
+    setReplenishCount(7);
+    setManualSelection([]);
+    setReplenishOpen(true);
+  };
+
   const drawRandom = () => {
     const drawn = replacementTiles(drawCount, counts);
     setCurrentRack((current) => [...current, ...drawn].slice(0, 7));
@@ -262,7 +281,7 @@ export default function Game() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="flex flex-wrap items-center gap-3 text-2xl font-extrabold">
-            You vs. JohnDoe{" "}
+            Q with U vs. John Doe{" "}
             <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-bold text-primary">
               YOUR TURN
             </span>
@@ -281,11 +300,11 @@ export default function Game() {
       <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
         <main className="min-w-0 space-y-4">
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <ScoreCard name="QwithU" score={String(score)} active />
-            <ScoreCard name="JohnDoe" score="312" />
+            <ScoreCard name="Q with U" score={String(score)} active />
+            <ScoreCard name="John Doe" score="312" />
           </div>
           <section className="rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-4">
-            <div className="mb-3 flex items-center justify-between gap-3 px-1">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   Turn 14 · your turn
@@ -302,6 +321,33 @@ export default function Game() {
                     : "Ready"}
               </span>
             </div>
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg bg-muted/50 p-2">
+              <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Test position
+              </span>
+              <Button
+                type="button"
+                variant={moveMode === "first" ? "default" : "outline"}
+                size="sm"
+                className="h-8 rounded-md text-xs"
+                onClick={() => setMoveMode("first")}
+              >
+                Q with U — First Move
+              </Button>
+              <Button
+                type="button"
+                variant={moveMode === "second" ? "default" : "outline"}
+                size="sm"
+                className="h-8 rounded-md text-xs"
+                onClick={() => setMoveMode("second")}
+              >
+                John Doe — Second Move / Opponent
+              </Button>
+              <span className="ml-auto text-xs font-semibold text-primary">
+                Playing as: {activePersona} · {activeMoveLabel}
+              </span>
+            </div>
+
             <ScrabbleBoard
               board={board}
               pending={pending}
@@ -346,48 +392,73 @@ export default function Game() {
             </div>
           </section>
           <section className="rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Your rack
+                  {activePersona} — Rack
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {currentRack.length} tiles available
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  setCurrentRack((current) =>
-                    [...current].sort((a, b) =>
-                      a.letter.localeCompare(b.letter),
-                    ),
-                  )
-                }
-              >
-                <RotateCcw className="h-4 w-4" /> Sort
-              </Button>
-            </div>
-            <div className="flex justify-center gap-1.5 sm:gap-2">
-              {currentRack.map((tile) => (
-                <button
-                  type="button"
-                  key={tile.id}
-                  draggable
-                  onDragStart={() => setDraggedRackId(tile.id)}
-                  onDragEnd={() => setDraggedRackId(null)}
-                  onClick={() => setSelectedRackId(tile.id)}
-                  aria-pressed={selectedRackId === tile.id}
-                  className={`relative grid h-14 min-w-10 flex-1 max-w-14 place-items-center rounded-lg border text-xl font-extrabold shadow-sm sm:h-16 ${selectedRackId === tile.id ? "-translate-y-1 border-primary bg-primary/10 ring-2 ring-primary/20" : "border-amber-200 bg-tile text-slate-800 hover:-translate-y-0.5"}`}
+              {currentRack.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentRack((current) =>
+                      [...current].sort((a, b) =>
+                        a.letter.localeCompare(b.letter),
+                      ),
+                    )
+                  }
                 >
-                  {tile.letter}
-                  <small className="absolute bottom-1 right-1 text-[9px]">
-                    {tile.points}
-                  </small>
-                </button>
-              ))}
+                  <RotateCcw className="h-4 w-4" /> Sort
+                </Button>
+              )}
             </div>
+            {currentRack.length ? (
+              <div className="flex justify-center gap-1.5 sm:gap-2">
+                {currentRack.map((tile) => (
+                  <button
+                    type="button"
+                    key={tile.id}
+                    draggable
+                    onDragStart={() => setDraggedRackId(tile.id)}
+                    onDragEnd={() => setDraggedRackId(null)}
+                    onClick={() => setSelectedRackId(tile.id)}
+                    aria-pressed={selectedRackId === tile.id}
+                    className={`relative grid h-14 min-w-10 flex-1 max-w-14 place-items-center rounded-lg border text-xl font-extrabold shadow-sm sm:h-16 ${selectedRackId === tile.id ? "-translate-y-1 border-primary bg-primary/10 ring-2 ring-primary/20" : "border-amber-200 bg-tile text-slate-800 hover:-translate-y-0.5"}`}
+                  >
+                    {tile.letter}
+                    <small className="absolute bottom-1 right-1 text-[9px]">
+                      {tile.points}
+                    </small>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-border p-4 text-center">
+                <p className="text-sm font-semibold">
+                  Choose tiles for {activePersona}’s rack.
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Use Manual tile selection or Random Tiles to begin.
+                </p>
+                <div className="mt-3 flex justify-center gap-2">
+                  <Button size="sm" onClick={openRackSelection}>
+                    Manual tile selection
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openRackSelection}
+                  >
+                    Random Tiles
+                  </Button>
+                </div>
+              </div>
+            )}
           </section>
           <div className="grid grid-cols-[.9fr_1fr_1.7fr_1fr_1fr] gap-1.5 sm:gap-2">
             <Button
@@ -639,18 +710,26 @@ export default function Game() {
       <Dialog open={replenishOpen} onOpenChange={setReplenishOpen}>
         <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Move submitted successfully</DialogTitle>
+            <DialogTitle>
+              {!currentRack.length &&
+              !Object.keys(board).length &&
+              !Object.keys(pending).length
+                ? "Build your rack"
+                : "Move submitted successfully"}
+            </DialogTitle>
             <DialogDescription>
-              {drawCount} tile{drawCount === 1 ? "" : "s"} played. Pick{" "}
-              {drawCount} tile{drawCount === 1 ? "" : "s"} from the remaining
-              bag, or draw randomly.
+              {!currentRack.length &&
+              !Object.keys(board).length &&
+              !Object.keys(pending).length
+                ? `Choose ${drawCount} tiles for ${activePersona} using manual selection or Random Tiles.`
+                : `${drawCount} tile${drawCount === 1 ? "" : "s"} played. Pick ${drawCount} tile${drawCount === 1 ? "" : "s"} from the remaining bag, or draw randomly.`}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3">
-            <Button onClick={drawRandom}>Draw Random Tiles</Button>
+            <Button onClick={drawRandom}>Random Tiles</Button>
             <div>
               <p className="mb-2 text-sm font-semibold">
-                Pick from Tile Bag{" "}
+                Manual tile selection{" "}
                 {manualSelection.length
                   ? `(${manualSelection.length}/${drawCount})`
                   : ""}
@@ -660,14 +739,25 @@ export default function Game() {
                   <button
                     type="button"
                     key={letter}
-                    disabled={!count || manualSelection.length >= drawCount}
+                    disabled={
+                      !count ||
+                      manualSelection.length >= drawCount ||
+                      manualSelection.filter(
+                        (selectedLetter) => selectedLetter === letter,
+                      ).length >= count
+                    }
                     onClick={() =>
                       setManualSelection((current) => [...current, letter])
                     }
                     className="rounded border border-amber-200 bg-tile py-2 text-sm font-bold disabled:opacity-40"
                   >
                     {letter}
-                    <small className="block text-[9px]">{count}</small>
+                    <small className="block text-[9px]">
+                      {count -
+                        manualSelection.filter(
+                          (selectedLetter) => selectedLetter === letter,
+                        ).length}
+                    </small>
                   </button>
                 ))}
               </div>
