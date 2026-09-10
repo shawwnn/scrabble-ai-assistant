@@ -50,7 +50,6 @@ import {
   type BoardTile,
   type Tile,
 } from "@/lib/game-data";
-import { validateMoveBackend } from "../../shared/api";
 import { useMoveValidation } from "@shared/integrations/useMoveValidation";
 
 export default function Game() {
@@ -221,16 +220,16 @@ export default function Game() {
   };
 
   const submitMove = () => {
-    if (validation.status !== "valid") {
-      setFeedback(validation.reason);
+    if (moveValidation.status !== "valid") {
+      setFeedback(moveValidation.reason ?? validation.reason);
       return;
     }
     setReplenishCount(Object.keys(pending).length);
     setBoard((current) => ({ ...current, ...pending }));
     setPending({});
-    setScore((current) => current + validation.score);
+    setScore((current) => current + moveValidation.moveScore);
     setFeedback(
-      `Move confirmed for ${validation.score} points. Choose how to replenish your rack.`,
+      `Move confirmed for ${moveValidation.moveScore} points. Choose how to replenish your rack.`,
     );
     setReplenishOpen(true);
   };
@@ -312,11 +311,11 @@ export default function Game() {
                 <h2 className="text-lg font-bold">Build your word</h2>
               </div>
               <span
-                className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${validation.status === "valid" ? "bg-emerald-100 text-emerald-700" : validation.status === "invalid" ? "bg-rose-100 text-rose-700" : "bg-muted text-muted-foreground"}`}
+                className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${moveValidation.status === "valid" ? "bg-emerald-100 text-emerald-700" : moveValidation.status === "invalid" ? "bg-rose-100 text-rose-700" : "bg-muted text-muted-foreground"}`}
               >
-                {validation.status === "valid"
+                {moveValidation.status === "valid"
                   ? "✓ Valid move"
-                  : validation.status === "invalid"
+                  : moveValidation.status === "invalid"
                     ? "✕ Invalid move"
                     : "Ready"}
               </span>
@@ -370,12 +369,12 @@ export default function Game() {
               }}
             />
             <div
-              className={`mt-2 rounded-lg px-3 py-2 text-xs ${validation.status === "valid" ? "bg-emerald-50 text-emerald-700" : validation.status === "invalid" ? "bg-rose-50 text-rose-700" : "bg-muted text-muted-foreground"}`}
+              className={`mt-2 rounded-lg px-3 py-2 text-xs ${moveValidation.status === "valid" ? "bg-emerald-50 text-emerald-700" : moveValidation.status === "invalid" ? "bg-rose-50 text-rose-700" : "bg-muted text-muted-foreground"}`}
               aria-live="polite"
             >
-              {validation.status === "valid"
-                ? `${validation.reason} Score: ${validation.score} points.`
-                : validation.reason || feedback}
+              {moveValidation.status === "valid"
+                ? `${moveValidation.reason ?? validation.reason} Score: ${moveValidation.moveScore} points.`
+                : moveValidation.reason ?? validation.reason ?? feedback}
             </div>
             <div className="mt-2 flex items-center justify-end gap-2 xl:hidden">
               <Button variant="outline" size="sm" className="rounded-lg">
@@ -480,7 +479,7 @@ export default function Game() {
 
             <Button
               className="h-11 bg-primary px-2 text-xs font-extrabold hover:bg-primary/90 sm:px-5 sm:text-sm"
-              disabled={validation.status !== "valid"}
+              disabled={moveValidation.status !== "valid"}
               onClick={submitMove}
             >
               <Check className="h-4 w-4" /> Submit
