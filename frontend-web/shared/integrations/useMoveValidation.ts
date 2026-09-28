@@ -10,6 +10,8 @@ type BackendValidation = {
   dictionary: string;
 };
 
+type ValidationStatus = "unchanged" | "checking" | "valid" | "invalid";
+
 type LocalValidation = {
   status: "unchanged" | "valid" | "invalid";
   score?: number;
@@ -24,23 +26,22 @@ export function useMoveValidation({
   currentMoveTiles,
   localValidation,
 }: UseMoveValidationProps) {
-  const [backendValidation, setBackendValidation] =
-    useState<BackendValidation | null>(null);
+  const [backendValidation, setBackendValidation] = useState<{
+    moveKey: string;
+    result: BackendValidation;
+  } | null>(null);
 
   const requestId = useRef(0);
+  const moveKey = JSON.stringify(currentMoveTiles);
+  const hasTiles = Array.isArray(currentMoveTiles) && currentMoveTiles.length > 0;
+  const needsBackendValidation = hasTiles && localValidation.status === "valid";
 
   useEffect(() => {
     const id = ++requestId.current;
 
-    // New move → immediately fall back to the current local result.
-    setBackendValidation(null);
-
-    // Nothing to validate yet.
-    if (
-      !currentMoveTiles ||
-      !Array.isArray(currentMoveTiles) ||
-      currentMoveTiles.length === 0
-    ) {
+    // Placement-rule errors are definitive. Do not let a stale or unnecessary
+    // dictionary request override their red state.
+    if (!needsBackendValidation) {
       return;
     }
 
@@ -49,24 +50,34 @@ export function useMoveValidation({
         // Ignore a response belonging to an older move.
         if (id !== requestId.current) return;
 
-        setBackendValidation(result);
+        setBackendValidation({ moveKey, result });
       })
       .catch(() => {
         // Keep the existing local UI behavior if the backend request fails.
       });
-  }, [currentMoveTiles]);
+  }, [currentMoveTiles, moveKey, needsBackendValidation]);
 
-  // Backend overrides local state as soon as its response arrives.
-  if (backendValidation) {
+  // Only accept a response for the current board position. A new move remains
+  // disabled while its dictionary request is running.
+  if (needsBackendValidation && backendValidation?.moveKey === moveKey) {
+    const { result } = backendValidation;
     return {
-      status: backendValidation.status,
-      moveScore: backendValidation.totalProjectedScore,
+      status: result.status as ValidationStatus,
+      moveScore: result.totalProjectedScore,
 
       // Other backend fields
-      words: backendValidation.words,
-      invalidWords: backendValidation.invalidWords,
-      reason: backendValidation.reason,
-      dictionary: backendValidation.dictionary,
+      words: result.words,
+      invalidWords: result.invalidWords,
+      reason: result.reason,
+      dictionary: result.dictionary,
+    };
+  }
+
+  if (needsBackendValidation) {
+    return {
+      status: "checking" as const,
+      moveScore: 0,
+      reason: "Checking the dictionary…",
     };
   }
 

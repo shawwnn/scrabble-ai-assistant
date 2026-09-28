@@ -22,7 +22,7 @@ type Props = {
   onCellClick?: (row: number, col: number) => void;
   onCellDrop?: (row: number, col: number) => void;
   onPendingDragStart?: (key: string) => void;
-  validationStatus?: "unchanged" | "valid" | "invalid";
+  validationStatus?: "unchanged" | "checking" | "valid" | "invalid";
   affectedKeys?: string[];
   moveScore?: number;
 };
@@ -78,7 +78,7 @@ export default function ScrabbleBoard({
                 event.preventDefault();
                 onCellDrop?.(row, col);
               }}
-              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isAffected && validationStatus === "valid" ? "ring-2 ring-inset ring-emerald-400" : ""} ${isAffected && validationStatus === "invalid" ? "ring-2 ring-inset ring-rose-500" : ""} ${isPending && validationStatus === "unchanged" ? "ring-2 ring-inset ring-amber-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
+              className={`board-cell relative min-h-0 min-w-0 border border-board-edge/70 text-[clamp(6px,1.45vw,11px)] font-black ${premium ? premiumStyles[premium] : "bg-board"} ${isAffected && validationStatus === "valid" ? "ring-2 ring-inset ring-emerald-400" : ""} ${isAffected && validationStatus === "invalid" ? "ring-2 ring-inset ring-rose-500" : ""} ${isPending && (validationStatus === "unchanged" || validationStatus === "checking") ? "ring-2 ring-inset ring-amber-300" : ""} ${onCellClick ? "cursor-pointer hover:brightness-110 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-white" : "cursor-default"}`}
             >
               {premium && !tile && (
                 <span className="absolute inset-0 grid place-items-center tracking-tight opacity-90">

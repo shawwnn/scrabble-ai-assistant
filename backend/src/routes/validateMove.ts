@@ -38,6 +38,20 @@ router.post("/", (req, res) => {
 
   const selectedDictionary: DictionaryName = dictionary ?? "UK";
 
+  // An empty word list is not a valid move. Without this guard, checkWords()
+  // considers it valid because there are no invalid dictionary entries, which
+  // incorrectly enables a one-tile opening placement.
+  if (formedWords.length === 0) {
+    return res.json({
+      status: "invalid",
+      totalProjectedScore: 0,
+      words: [],
+      invalidWords: [],
+      reason: "Your move must create at least one word.",
+      dictionary: selectedDictionary,
+    });
+  }
+
   const result = checkWords(selectedDictionary, words);
 
   console.log("DICTIONARY RESULT:", result);

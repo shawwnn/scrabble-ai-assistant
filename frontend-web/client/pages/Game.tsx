@@ -317,7 +317,9 @@ export default function Game() {
                   ? "✓ Valid move"
                   : moveValidation.status === "invalid"
                     ? "✕ Invalid move"
-                    : "Ready"}
+                    : moveValidation.status === "checking"
+                      ? "Checking…"
+                      : "Ready"}
               </span>
             </div>
             <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg bg-muted/50 p-2">

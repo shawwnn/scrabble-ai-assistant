@@ -27,6 +27,13 @@ describe("validateMove", () => {
     expect(result.reason).toBe("The first move must cover the center square.");
   });
 
+  test("rejects a one-tile first move, even when it covers the center", () => {
+    const result = validateMove({}, { "7,7": tile("A", 1) });
+
+    expect(result.status).toBe("invalid");
+    expect(result.reason).toBe("Your move must create at least one word.");
+  });
+
   test("accepts a first move covering center", () => {
     const pending: Board = {
       "7,6": tile("C", 3),
