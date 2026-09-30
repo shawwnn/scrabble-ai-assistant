@@ -33,8 +33,8 @@ export default function ScrabbleBoard({
   const affectedKeySet = new Set(affectedKeys);
 
   return (
-    <div className="board-shell mx-auto w-full min-w-[320px] max-w-[720px] rounded-2xl p-2 shadow-xl sm:p-3">
-      <div className="grid aspect-square w-full min-w-[320px] grid-cols-15 overflow-visible rounded-xl border-2 border-board-edge bg-board-deep">
+    <div className="board-shell mx-auto w-full min-w-0 max-w-[720px] rounded-2xl p-2 shadow-xl sm:p-3">
+      <div className="grid aspect-square w-full min-w-0 grid-cols-15 overflow-visible rounded-xl border-2 border-board-edge bg-board-deep">
         {Array.from({ length: 225 }, (_, index) => {
           const row = Math.floor(index / 15);
           const col = index % 15;
@@ -69,9 +69,9 @@ export default function ScrabbleBoard({
           );
         })}
       </div>
-      <div className="mt-2 flex items-center justify-between px-1 text-[10px] font-semibold text-white/65 sm:text-xs">
-        <span>Tap a square to place</span>
-        <span>Drag tiles from your rack</span>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-1 text-[10px] font-semibold text-white/65 sm:text-xs">
+        <span>Select a rack tile, then tap a square</span>
+        <span>Or drag a rack tile to place it</span>
       </div>
     </div>
   );
