@@ -1,4 +1,6 @@
-import { getPremium, seededTiles, tilePoints, type BoardTile } from "@/lib/game-data";
+import { seededTiles, type BoardTile } from "@/lib/game-data";
+import { getPremium } from "@shared/premiums";
+import { tilePoints } from "@shared/tiles";
 
 const premiumStyles = {
   tw: "bg-premium-tw text-white",

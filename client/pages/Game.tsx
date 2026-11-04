@@ -6,7 +6,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ScrabbleBoard from "@/components/ScrabbleBoard";
-import { getUnseenCounts, moveHistory, opponentRack, replacementTiles, suggestions, tilePoints, validateMove, type BoardTile, type Tile } from "@/lib/game-data";
+import { getUnseenCounts, moveHistory, opponentRack, replacementTiles, suggestions, validateMove, type BoardTile, type Tile } from "@/lib/game-data";
+import { tilePoints } from "@shared/tiles";
 
 export default function Game() {
   const [board, setBoard] = useState<Record<string, BoardTile>>({});
