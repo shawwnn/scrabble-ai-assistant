@@ -54,6 +54,6 @@ export const handleAnalyze: RequestHandler = (req, res) => {
     return;
   }
 
-  const body: AnalyzeResponse = { dictionary: dictionaryName, recommendation: result.recommendation };
+  const body: AnalyzeResponse = { dictionary: dictionaryName, recommendation: result.recommendation, suggestions: result.suggestions };
   res.json(body);
 };

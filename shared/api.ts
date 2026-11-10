@@ -55,6 +55,7 @@ export interface MoveRecommendation extends Move {
 export interface AnalyzeResponse {
   dictionary: DictionaryName;
   recommendation: MoveRecommendation | null;
+  suggestions: Move[];
 }
 
 export interface AnalyzeErrorResponse {

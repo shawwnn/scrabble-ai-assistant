@@ -4,41 +4,49 @@ import type { Dictionary } from "./dictionary";
 import { generateMoves } from "./movegen";
 import { BINGO_BONUS, RACK_SIZE } from "./score";
 
+const SUGGESTION_COUNT = 5;
+
 export interface AnalysisResult {
   issues: string[];
   recommendation: MoveRecommendation | null;
+  suggestions: Move[];
 }
 
 export function analyzeBoard(tiles: BoardTileInput[], rack: string[], dictionary: Dictionary): AnalysisResult {
   const { grid, issues } = buildGrid(tiles);
-  if (issues.length > 0) return { issues, recommendation: null };
+  if (issues.length > 0) return { issues, recommendation: null, suggestions: [] };
 
   const invalidWords = findInvalidBoardWords(grid, dictionary);
   if (invalidWords.length > 0) {
-    return { issues: invalidWords.map((word) => `"${word}" on the board is not in the word list.`), recommendation: null };
+    return {
+      issues: invalidWords.map((word) => `"${word}" on the board is not in the word list.`),
+      recommendation: null,
+      suggestions: [],
+    };
   }
 
-  const best = selectBestMove(generateMoves(grid, dictionary, rack.map((letter) => letter.toUpperCase())));
-  if (!best) return { issues: [], recommendation: null };
-  return { issues: [], recommendation: { ...best, explanation: explain(best, rack.length) } };
+  const suggestions = rankMoves(generateMoves(grid, dictionary, rack.map((letter) => letter.toUpperCase())), SUGGESTION_COUNT);
+  const [best] = suggestions;
+  if (!best) return { issues: [], recommendation: null, suggestions: [] };
+  return { issues: [], recommendation: { ...best, explanation: explain(best, rack.length) }, suggestions };
 }
 
 export function selectBestMove(moves: Move[]): Move | null {
-  const bingos = moves.filter((move) => move.bingo);
-  const pool = bingos.length > 0 ? bingos : moves;
-  let best: Move | null = null;
-  for (const move of pool) {
-    if (!best || isPreferred(move, best)) best = move;
-  }
-  return best;
+  return rankMoves(moves, 1)[0] ?? null;
 }
 
-function isPreferred(a: Move, b: Move): boolean {
-  if (a.score !== b.score) return a.score > b.score;
-  if (a.row !== b.row) return a.row < b.row;
-  if (a.col !== b.col) return a.col < b.col;
-  if (a.direction !== b.direction) return a.direction === "horizontal";
-  return a.word < b.word;
+function rankMoves(moves: Move[], limit: number): Move[] {
+  return [...moves].sort(compareMoves).slice(0, limit);
+}
+
+function compareMoves(a: Move, b: Move): number {
+  if (a.bingo !== b.bingo) return a.bingo ? -1 : 1;
+  if (a.score !== b.score) return b.score - a.score;
+  if (a.row !== b.row) return a.row - b.row;
+  if (a.col !== b.col) return a.col - b.col;
+  if (a.direction !== b.direction) return a.direction === "horizontal" ? -1 : 1;
+  if (a.word === b.word) return 0;
+  return a.word < b.word ? -1 : 1;
 }
 
 function findInvalidBoardWords(grid: Grid, dictionary: Dictionary): string[] {

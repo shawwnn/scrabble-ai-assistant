@@ -46,6 +46,7 @@ describe("POST /api/analyze", () => {
     const body = (await response.json()) as AnalyzeResponse;
     expect(body.dictionary).toBe("CSW2024");
     expect(body.recommendation).toMatchObject({ word: "REPAINTED", bingo: true, score: 89 });
+    expect(body.suggestions[0]).toMatchObject({ word: "REPAINTED", bingo: true, score: 89 });
   });
 
   it("rejects a rack with more than seven tiles", async () => {

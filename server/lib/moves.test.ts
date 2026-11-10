@@ -52,9 +52,21 @@ describe("ordinary move detection", () => {
   });
 
   it("returns no recommendation when no legal play exists", () => {
-    const { issues, recommendation } = analyzeBoard([], ["Q"], createDictionary(["CAT"]));
+    const { issues, recommendation, suggestions } = analyzeBoard([], ["Q"], createDictionary(["CAT"]));
     expect(issues).toEqual([]);
     expect(recommendation).toBeNull();
+    expect(suggestions).toEqual([]);
+  });
+
+  it("ranks the bingo first and caps suggestions at five", () => {
+    const dictionary = createDictionary(["PAINTER", "PAINT", "PAIN", "PAIR", "PINE", "PANT", "PATE"]);
+    const { recommendation, suggestions } = analyzeBoard([], ["P", "A", "I", "N", "T", "E", "R"], dictionary);
+    expect(suggestions).toHaveLength(5);
+    expect(suggestions[0]).toMatchObject({ word: "PAINTER", bingo: true });
+    expect(suggestions[0]).toMatchObject({ word: recommendation.word, row: recommendation.row, col: recommendation.col });
+    const bingoCount = suggestions.filter((move) => move.bingo).length;
+    expect(bingoCount).toBeGreaterThan(0);
+    expect(suggestions.slice(0, bingoCount).every((move) => move.bingo)).toBe(true);
   });
 
   it("rejects placements whose crossword is not a word", () => {
