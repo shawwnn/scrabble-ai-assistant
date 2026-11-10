@@ -3,7 +3,6 @@ import cors from "cors";
 import gamesRouter from "./routes/games.js";
 import validateMoveRouter from "./routes/validateMove.js";
 import { initializeDictionary } from "./game/dictionary.js";
-import { supabase } from "./db/supabase.js";
 
 // ./backend/src/server.ts
 
@@ -27,14 +26,9 @@ app.get("/api/server", (req, res) => {
 app.use("/api/games", gamesRouter);
 app.use("/api/validate-move", validateMoveRouter);
 
-async function testSupabase() {
-  const { data, error } = await supabase.from("games").select("*");
-
-  console.log("Supabase data:", data);
-  console.log("Supabase error:", error);
-}
-
-testSupabase();
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -13,6 +13,8 @@ import {
   Undo2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -42,7 +44,6 @@ import ScrabbleBoard from "@/components/ScrabbleBoard";
 import {
   getUnseenCounts,
   moveHistory,
-  opponentRack,
   replacementTiles,
   suggestions,
   tilePoints,
@@ -50,9 +51,16 @@ import {
   type BoardTile,
   type Tile,
 } from "@/lib/game-data";
-import { useMoveValidation } from "@shared/integrations/useMoveValidation";
+import { getGame, submitGameMove } from "@shared/api";
 
 export default function Game() {
+  const { gameId } = useParams<{ gameId: string }>();
+  const queryClient = useQueryClient();
+  const gameQuery = useQuery({
+    queryKey: ["game", gameId],
+    queryFn: () => getGame(gameId!),
+    enabled: Boolean(gameId),
+  });
   const [board, setBoard] = useState<Record<string, BoardTile>>({});
   const [moveMode, setMoveMode] = useState<"first" | "second" | null>(null);
   const [currentRack, setCurrentRack] = useState<Tile[]>([]);
@@ -78,6 +86,18 @@ export default function Game() {
     "Choose a rack tile, then place it on the board.",
   );
   const [score, setScore] = useState(301);
+  const [submittingMove, setSubmittingMove] = useState(false);
+
+  const game = gameQuery.data;
+  const currentPlayer = game?.players.find((player) => player.id === game.currentPlayerId);
+  const opponentPlayer = game?.players.find((player) => player.id !== game.currentPlayerId);
+
+  useEffect(() => {
+    if (!game || Object.keys(pending).length) return;
+    setBoard(game.board);
+    setCurrentRack(currentPlayer?.rack ?? []);
+    setScore(currentPlayer?.score ?? 0);
+  }, [game, currentPlayer, pending]);
 
   const validation = useMemo(
     () => validateMove(board, pending),
@@ -95,29 +115,24 @@ export default function Game() {
     });
   }, [board, pending, validation.affectedKeys]);
 
-  // added custom hook to handle JSON Response from the backend validation API call
-  const moveValidation = useMoveValidation({
-    currentMoveTiles,
-    localValidation: validation,
-  });
-  // added custom hook to handle JSON Response from the backend validation API call
-
-  // added code to backend validation API call
-  // useEffect(() => {
-  //   console.log("CURRENT MOVE TILES UPDATED:", currentMoveTiles);
-
-  //   validateMoveBackend(currentMoveTiles);
-  // }, [currentMoveTiles]);
-  // added code to backend validation
+  // Placement feedback remains local while tiles are being dragged. The server
+  // re-validates the complete persisted position, dictionary, score, and turn
+  // when Submit is pressed, before it writes anything to Supabase.
+  const moveValidation = {
+    status: validation.status,
+    moveScore: validation.score,
+    reason: validation.reason,
+  };
 
   const counts = useMemo(
-    () => getUnseenCounts({ ...board, ...pending }, currentRack, opponentRack),
-    [board, pending, currentRack],
+    () => getUnseenCounts({ ...board, ...pending }, currentRack, (opponentPlayer?.rack ?? []).map((tile) => tile.wildcard ? "?" : tile.letter)),
+    [board, pending, currentRack, opponentPlayer],
   );
-  const remaining = Object.values(counts).reduce(
+  const calculatedRemaining = Object.values(counts).reduce(
     (sum, count) => sum + count,
     0,
   );
+  const remaining = game?.bagCount ?? calculatedRemaining;
   const selectedMove = moveHistory.find((move) => move.id === selectedMoveId);
 
   const activePersona =
@@ -182,6 +197,7 @@ export default function Game() {
       [key]: {
         letter: tile.letter,
         points: tile.points,
+        rackTileId: tile.id,
         pending: true,
         ...(tile.wildcard ? { wildcard: true } : {}),
       },
@@ -219,19 +235,32 @@ export default function Game() {
     setFeedback(`Blank tile set to ${letter}. The move will be checked again.`);
   };
 
-  const submitMove = () => {
+  const submitMove = async () => {
     if (moveValidation.status !== "valid") {
       setFeedback(moveValidation.reason ?? validation.reason);
       return;
     }
-    setReplenishCount(Object.keys(pending).length);
-    setBoard((current) => ({ ...current, ...pending }));
-    setPending({});
-    setScore((current) => current + moveValidation.moveScore);
-    setFeedback(
-      `Move confirmed for ${moveValidation.moveScore} points. Choose how to replenish your rack.`,
-    );
-    setReplenishOpen(true);
+    if (!gameId || !currentPlayer) return;
+    const placements = Object.entries(pending).map(([key, tile]) => {
+      const [row, col] = key.split(",").map(Number);
+      return { row, col, tileId: tile.rackTileId ?? "", letter: tile.letter };
+    });
+    if (placements.some((placement) => !placement.tileId)) {
+      setFeedback("A pending tile could not be matched to your rack. Please replace it.");
+      return;
+    }
+    setSubmittingMove(true);
+    try {
+      const updatedGame = await submitGameMove(gameId, currentPlayer.id, placements);
+      queryClient.setQueryData(["game", gameId], updatedGame);
+      setPending({});
+      setReplenishCount(0);
+      setFeedback(`Move confirmed for ${moveValidation.moveScore} points.`);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "Unable to submit this move.");
+    } finally {
+      setSubmittingMove(false);
+    }
   };
 
   const openAi = () => {
@@ -275,12 +304,19 @@ export default function Game() {
   const shuffleRack = () =>
     setCurrentRack((current) => [...current].sort(() => Math.random() - 0.5));
 
+  if (gameQuery.isLoading) {
+    return <div className="rounded-2xl border border-border bg-card p-6 text-muted-foreground">Loading game…</div>;
+  }
+  if (gameQuery.isError || !game) {
+    return <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-700">{gameQuery.error instanceof Error ? gameQuery.error.message : "Game not found."}</div>;
+  }
+
   return (
     <div className="space-y-5 pb-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="flex flex-wrap items-center gap-3 text-2xl font-extrabold">
-            Q with U vs. John Doe{" "}
+            {currentPlayer?.name ?? "Player"} vs. {opponentPlayer?.name ?? "Opponent"}{" "}
             <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-bold text-primary">
               YOUR TURN
             </span>
@@ -299,8 +335,8 @@ export default function Game() {
       <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
         <main className="min-w-0 space-y-4">
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <ScoreCard name="Q with U" score={String(score)} active />
-            <ScoreCard name="John Doe" score="312" />
+            <ScoreCard name={currentPlayer?.name ?? "Player"} score={String(score)} active />
+            <ScoreCard name={opponentPlayer?.name ?? "Opponent"} score={String(opponentPlayer?.score ?? 0)} />
           </div>
           <section className="rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-4">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1">
@@ -317,9 +353,7 @@ export default function Game() {
                   ? "✓ Valid move"
                   : moveValidation.status === "invalid"
                     ? "✕ Invalid move"
-                    : moveValidation.status === "checking"
-                      ? "Checking…"
-                      : "Ready"}
+                    : "Ready"}
               </span>
             </div>
             <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg bg-muted/50 p-2">
@@ -481,10 +515,10 @@ export default function Game() {
 
             <Button
               className="h-11 bg-primary px-2 text-xs font-extrabold hover:bg-primary/90 sm:px-5 sm:text-sm"
-              disabled={moveValidation.status !== "valid"}
+              disabled={moveValidation.status !== "valid" || submittingMove}
               onClick={submitMove}
             >
-              <Check className="h-4 w-4" /> Submit
+              <Check className="h-4 w-4" /> {submittingMove ? "Saving…" : "Submit"}
             </Button>
             <Button
               variant="outline"

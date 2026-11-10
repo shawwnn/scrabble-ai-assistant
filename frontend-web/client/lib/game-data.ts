@@ -10,6 +10,7 @@ export type Premium = "tw" | "dw" | "tl" | "dl" | "star" | null;
 export type BoardTile = {
   letter: string;
   points: number;
+  rackTileId?: string;
   pending?: boolean;
   wildcard?: boolean;
 };
