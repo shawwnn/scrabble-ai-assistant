@@ -1,9 +1,9 @@
-import { Bell, Gamepad2, History, Home, Menu, Settings, Sparkles, X } from "lucide-react";
+import { Bell, Gamepad2, History, Home, Menu, ScanLine, Settings, Sparkles, X } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const nav = [{ to: "/", label: "Home", icon: Home }, { to: "/games", label: "Ongoing games", icon: Gamepad2 }, { to: "/history", label: "Match history", icon: History }, { to: "/settings", label: "Settings", icon: Settings }];
+const nav = [{ to: "/", label: "Home", icon: Home }, { to: "/games", label: "Ongoing games", icon: Gamepad2 }, { to: "/history", label: "Match history", icon: History }, { to: "/analyzer", label: "Analyzer", icon: ScanLine }, { to: "/settings", label: "Settings", icon: Settings }];
 export default function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
