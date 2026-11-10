@@ -14,6 +14,11 @@ import Game from "./pages/Game";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import AnalyzerLayout from "./components/analyzer/AnalyzerLayout";
+import AnalyzerHome from "./pages/AnalyzerHome";
+import AnalyzerUpload from "./pages/AnalyzerUpload";
+import AnalyzerProcessing from "./pages/AnalyzerProcessing";
+import AnalyzerResults from "./pages/AnalyzerResults";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +29,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/analyzer" element={<AnalyzerLayout />}>
+            <Route index element={<AnalyzerHome />} />
+            <Route path="upload" element={<AnalyzerUpload />} />
+            <Route path="processing" element={<AnalyzerProcessing />} />
+            <Route path="results" element={<AnalyzerResults />} />
+          </Route>
           <Route element={<AppShell />}>
             <Route path="/" element={<Index />} />
             <Route path="/new-game" element={<NewGame />} />
