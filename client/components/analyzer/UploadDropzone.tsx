@@ -1,47 +1,56 @@
-import { useRef } from "react";
-import { Camera, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import ScreenshotPreview from "@/components/analyzer/ScreenshotPreview";
+import UploadPrompt from "@/components/analyzer/UploadPrompt";
+import { ACCEPT_ATTRIBUTE } from "@/lib/analyzer-upload";
 
 interface UploadDropzoneProps {
+  file: File | null;
+  previewUrl: string | null;
   onFileSelect: (file: File) => void;
+  onRemove: () => void;
 }
 
-export default function UploadDropzone({ onFileSelect }: UploadDropzoneProps) {
+export default function UploadDropzone({ file, previewUrl, onFileSelect, onRemove }: UploadDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const openFilePicker = () => inputRef.current?.click();
 
   return (
     <div
-      className="flex w-full flex-col items-center gap-4"
-      onDragOver={(event) => event.preventDefault()}
+      className={`flex w-full max-w-2xl flex-col items-center gap-4 rounded-2xl border-2 border-dashed p-6 transition-colors md:p-8 ${
+        isDragging ? "border-primary bg-primary/5" : "border-border bg-card"
+      }`}
+      onDragOver={(event) => {
+        event.preventDefault();
+        setIsDragging(true);
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsDragging(false);
+      }}
       onDrop={(event) => {
         event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        if (file) onFileSelect(file);
+        setIsDragging(false);
+        const dropped = event.dataTransfer.files[0];
+        if (dropped) onFileSelect(dropped);
       }}
     >
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className="flex w-full max-w-md items-center justify-center gap-3 rounded-2xl bg-primary px-8 py-5 text-xl font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
-      >
-        <Upload className="h-7 w-7" strokeWidth={2.5} />
-        Select Image
-      </button>
+      {file ? (
+        <ScreenshotPreview file={file} previewUrl={previewUrl} onReplace={openFilePicker} onRemove={onRemove} />
+      ) : (
+        <UploadPrompt onBrowse={openFilePicker} />
+      )}
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept={ACCEPT_ATTRIBUTE}
         className="hidden"
         onChange={(event) => {
-          const file = event.target.files?.[0];
+          const selected = event.target.files?.[0];
           event.target.value = "";
-          if (file) onFileSelect(file);
+          if (selected) onFileSelect(selected);
         }}
       />
-      <p className="text-base text-slate-500">or drag and drop here</p>
-      <p className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
-        <Camera className="h-4 w-4" />
-        Supports JPG, PNG, WEBP • Clear image for best results
-      </p>
     </div>
   );
 }
