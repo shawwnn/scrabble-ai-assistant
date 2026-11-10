@@ -1,7 +1,11 @@
+import { useState } from "react";
 import ScrabbleTileLogo from "@/components/analyzer/ScrabbleTileLogo";
 import UploadDropzone from "@/components/analyzer/UploadDropzone";
+import UploadErrorNotice from "@/components/analyzer/UploadErrorNotice";
 
 export default function AnalyzerUpload() {
+  const [extractionFailed, setExtractionFailed] = useState(false);
+
   return (
     <section className="flex flex-col items-center px-2 py-6 text-center md:py-10">
       <ScrabbleTileLogo />
@@ -11,8 +15,9 @@ export default function AnalyzerUpload() {
       <p className="mt-4 max-w-xl text-lg leading-7 text-slate-600 md:text-xl">
         Upload a photo or screenshot of your Scrabble game for AI analysis and find the best move.
       </p>
-      <div className="mt-10 w-full">
-        <UploadDropzone />
+      <div className="mt-10 flex w-full flex-col items-center gap-6">
+        {extractionFailed && <UploadErrorNotice />}
+        <UploadDropzone onFileSelect={() => setExtractionFailed(true)} />
       </div>
     </section>
   );
