@@ -19,6 +19,7 @@ import AnalyzerHome from "./pages/AnalyzerHome";
 import AnalyzerUpload from "./pages/AnalyzerUpload";
 import AnalyzerProcessing from "./pages/AnalyzerProcessing";
 import AnalyzerResults from "./pages/AnalyzerResults";
+import AnalyzerError from "./pages/AnalyzerError";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="upload" element={<AnalyzerUpload />} />
             <Route path="processing" element={<AnalyzerProcessing />} />
             <Route path="results" element={<AnalyzerResults />} />
+            <Route path="error" element={<AnalyzerError />} />
           </Route>
           <Route element={<AppShell />}>
             <Route path="/" element={<Index />} />

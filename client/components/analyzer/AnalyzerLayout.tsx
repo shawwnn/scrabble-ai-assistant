@@ -6,6 +6,7 @@ const analyzerNav = [
   { to: "/analyzer/upload", label: "Upload", end: false },
   { to: "/analyzer/processing", label: "Processing", end: false },
   { to: "/analyzer/results", label: "Results", end: false },
+  { to: "/analyzer/error", label: "Error (temp)", end: false },
 ];
 
 export default function AnalyzerLayout() {
