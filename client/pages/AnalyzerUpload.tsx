@@ -24,6 +24,7 @@ export default function AnalyzerUpload() {
     }
     setError(null);
     setSelectedScreenshot(file);
+    navigate("/analyzer/processing");
   };
 
   const handleRemove = () => {
@@ -55,14 +56,6 @@ export default function AnalyzerUpload() {
             {error}
           </p>
         )}
-        <button
-          type="button"
-          disabled={!selectedFile}
-          onClick={() => navigate("/analyzer/processing")}
-          className="w-full max-w-md rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-primary-foreground shadow-lg shadow-primary/25 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:hover:bg-primary"
-        >
-          Analyze
-        </button>
       </div>
     </section>
   );
