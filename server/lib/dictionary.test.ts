@@ -1,8 +1,8 @@
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { createDictionary, DictionaryUnavailableError, loadDictionary } from "./dictionary";
+import { createDictionary, DictionaryUnavailableError, dictionaryPath, loadDictionary } from "./dictionary";
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -30,36 +30,43 @@ describe("loadDictionary", () => {
     expect(() => loadDictionary("NWL2023")).toThrow(DictionaryUnavailableError);
   });
 
-  it("reads the word list from DICTIONARY_DIR", () => {
+  it("reads CSW2024 table rows from DICTIONARY_DIR", () => {
     const directory = mkdtempSync(path.join(tmpdir(), "csw-dict-"));
-    writeFileSync(path.join(directory, "CSW2024.txt"), "QI\r\nZA\r\n");
+    writeFileSync(path.join(directory, "CSW2024.txt"), "--- Table: words ---\r\n('QI', 1, 2.0)\r\n('ZA', 1, 3.0)\r\n");
     vi.stubEnv("DICTIONARY_DIR", directory);
     const dictionary = loadDictionary("CSW2024");
     expect(dictionary.isWord("QI")).toBe(true);
     expect(dictionary.isWord("ZA")).toBe(true);
     expect(dictionary.isWord("XI")).toBe(false);
   });
+
+  it("reads NWL2023 entries by their first word and ignores definitions", () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "nwl-dict-"));
+    writeFileSync(path.join(directory, "NWL2023.txt"), "AA rough, cindery lava [n AAS]\r\nQI a Chinese term\r\n");
+    vi.stubEnv("DICTIONARY_DIR", directory);
+    const dictionary = loadDictionary("NWL2023");
+    expect(dictionary.isWord("AA")).toBe(true);
+    expect(dictionary.isWord("QI")).toBe(true);
+    expect(dictionary.isWord("ROUGH")).toBe(false);
+  });
+
 });
 
-const realListPath = path.resolve(process.cwd(), "dictionaries", "CSW2024.txt");
-const realListPresent = existsSync(realListPath);
+const realListPresent = existsSync(dictionaryPath("CSW2024"));
 
-describe.skipIf(!realListPresent)(
-  `CSW2024 word list${realListPresent ? "" : " (skipped until dictionaries/CSW2024.txt is provided)"}`,
-  () => {
-    let real: ReturnType<typeof createDictionary>;
+describe.skipIf(!realListPresent)("CSW2024 word list", () => {
+  let real: ReturnType<typeof createDictionary>;
 
-    beforeAll(() => {
-      real = createDictionary(readFileSync(realListPath, "utf8").split(/\r?\n/));
-    });
+  beforeAll(() => {
+    real = loadDictionary("CSW2024");
+  });
 
-    it("accepts common words", () => {
-      expect(real.isWord("PAINTER")).toBe(true);
-      expect(real.isWord("QI")).toBe(true);
-    });
+  it("accepts common words", () => {
+    expect(real.isWord("PAINTER")).toBe(true);
+    expect(real.isWord("QI")).toBe(true);
+  });
 
-    it("rejects non-words", () => {
-      expect(real.isWord("ZZZ")).toBe(false);
-    });
-  },
-);
+  it("rejects non-words", () => {
+    expect(real.isWord("XQJ")).toBe(false);
+  });
+});

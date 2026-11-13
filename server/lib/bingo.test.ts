@@ -1,12 +1,10 @@
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { BoardTileInput } from "@shared/api";
 import { analyzeBoard } from "./analyze";
-import { createDictionary } from "./dictionary";
+import { createDictionary, dictionaryPath, loadDictionary } from "./dictionary";
 
-const realListPath = path.resolve(process.cwd(), "dictionaries", "CSW2024.txt");
-const realListPresent = existsSync(realListPath);
+const realListPresent = existsSync(dictionaryPath("CSW2024"));
 
 // Places a word starting at (row, col). Horizontal words run left to right; vertical words run top to bottom.
 function place(word: string, row: number, col: number, horizontal: boolean): BoardTileInput[] {
@@ -53,16 +51,13 @@ describe("bingo detection", () => {
     expect(recommendation.tiles.map(({ col }) => col)).toEqual([8, 9, 10, 11, 12, 13, 14]);
   });
 
-  it.skipIf(!realListPresent)(
-    `finds a seven-tile bingo with the real CSW2024 list${realListPresent ? "" : " (skipped until dictionaries/CSW2024.txt is provided)"}`,
-    () => {
-      const dictionary = createDictionary(readFileSync(realListPath, "utf8").split(/\r?\n/));
-      const rack = ["A", "E", "I", "N", "R", "S", "T"];
-      const { recommendation } = analyzeBoard([], rack, dictionary);
-      expect(recommendation.bingo).toBe(true);
-      expect(recommendation.tiles).toHaveLength(7);
-      expect([...recommendation.word].sort()).toEqual([...rack].sort());
-      expect(dictionary.isWord(recommendation.word)).toBe(true);
-    },
-  );
+  it.skipIf(!realListPresent)("finds a seven-tile bingo with the real CSW2024 list", () => {
+    const dictionary = loadDictionary("CSW2024");
+    const rack = ["A", "E", "I", "N", "R", "S", "T"];
+    const { recommendation } = analyzeBoard([], rack, dictionary);
+    expect(recommendation.bingo).toBe(true);
+    expect(recommendation.tiles).toHaveLength(7);
+    expect([...recommendation.word].sort()).toEqual([...rack].sort());
+    expect(dictionary.isWord(recommendation.word)).toBe(true);
+  });
 });

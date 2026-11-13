@@ -13,7 +13,7 @@ let baseUrl: string;
 
 beforeAll(async () => {
   const directory = mkdtempSync(path.join(tmpdir(), "analyze-route-"));
-  writeFileSync(path.join(directory, "CSW2024.txt"), "RE\nREPAINTED\n");
+  writeFileSync(path.join(directory, "CSW2024.txt"), "('RE', 2, 1.0)\n('REPAINTED', 9, 1.0)\n");
   vi.stubEnv("DICTIONARY_DIR", directory);
   server = createServer().listen(0);
   await once(server, "listening");
