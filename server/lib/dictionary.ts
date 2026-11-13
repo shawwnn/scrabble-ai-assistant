@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { DictionaryName } from "@shared/api";
 
 export interface TrieNode {
@@ -21,8 +22,11 @@ const loaded = new Map<string, Dictionary>();
 
 export class DictionaryUnavailableError extends Error {}
 
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const defaultDictionaryDir = path.resolve(moduleDir, "../../backend/data-dict");
+
 export function dictionaryPath(name: DictionaryName): string {
-  const directory = process.env.DICTIONARY_DIR ?? path.resolve(process.cwd(), "backend", "data-dict");
+  const directory = process.env.DICTIONARY_DIR ?? defaultDictionaryDir;
   return path.join(directory, SOURCES[name].file);
 }
 
