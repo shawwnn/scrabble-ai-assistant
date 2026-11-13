@@ -126,7 +126,7 @@ setPremium("dl", [
   "14,11",
 ]);
 
-const getPremium = (row: number, col: number): Premium => {
+export const getPremium = (row: number, col: number): Premium => {
   return (
     premiumMap[`${row},${col}`] ?? (row === 7 && col === 7 ? "star" : null)
   );

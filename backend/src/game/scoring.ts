@@ -1,5 +1,7 @@
 //backend/src/game/scoring.ts
 
+import { getPremium } from "./rules.js";
+
 type CurrentMoveTile = {
   key: string;
   letter: string;
@@ -75,26 +77,6 @@ function isPending(tile: CurrentMoveTile): boolean {
   return tile.tile["pending"] === true;
 }
 
-/**
- * Get the premium square for a board coordinate.
- *
- * IMPORTANT:
- * Premiums belong to board positions, not tiles.
- *
- * Replace this with your actual 15x15 board definition.
- */
-function getPremium(key: string): string | undefined {
-  // TODO: Connect to the actual 15x15 premium-board definition.
-
-  // Examples:
-  // return "DL";
-  // return "TL";
-  // return "DW";
-  // return "TW";
-
-  return undefined;
-}
-
 function scoreWord(formedWord: FormedWord): number {
   let wordScore = 0;
   let wordMultiplier = 1;
@@ -106,22 +88,23 @@ function scoreWord(formedWord: FormedWord): number {
     // Premium squares only apply to tiles
     // newly placed during this move.
     if (isPending(tile)) {
-      const premium = getPremium(tile.key);
+      const [row, col] = tile.key.split(",").map(Number) as [number, number];
+      const premium = getPremium(row, col);
 
       switch (premium) {
-        case "DL":
+        case "dl":
           tileScore *= 2;
           break;
 
-        case "TL":
+        case "tl":
           tileScore *= 3;
           break;
 
-        case "DW":
+        case "dw":
           wordMultiplier *= 2;
           break;
 
-        case "TW":
+        case "tw":
           wordMultiplier *= 3;
           break;
       }
