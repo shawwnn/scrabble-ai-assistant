@@ -6,7 +6,7 @@ import { getWordsFromMove } from "../game/words.js";
 import { checkWords, type DictionaryName } from "../game/dictionary.js";
 import { scoreMove } from "../game/scoring.js";
 
-const router = Router();
+const router: Router = Router();
 
 type CurrentMoveTile = {
   key: string;

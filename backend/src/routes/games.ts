@@ -3,7 +3,7 @@ import { supabase } from "../db/supabase.js";
 import { checkWords, type DictionaryName } from "../game/dictionary.js";
 import { validateMove, type Board, type BoardTile } from "../game/rules.js";
 
-const router = Router();
+const router: Router = Router();
 
 type RackTile = { id: string; letter: string; points: number; wildcard?: boolean };
 type GameRow = { id: string; status: string; dictionary: string; current_player_id: string | null; board: Board; bag: RackTile[] };
