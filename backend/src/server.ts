@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import gamesRouter from "./routes/games.js";
 import validateMoveRouter from "./routes/validateMove.js";
 import { initializeDictionary } from "./game/dictionary.js";
 
@@ -23,7 +22,6 @@ app.get("/api/server", (req, res) => {
   });
 });
 
-app.use("/api/games", gamesRouter);
 app.use("/api/validate-move", validateMoveRouter);
 
 app.get("/api/health", (_req, res) => {
