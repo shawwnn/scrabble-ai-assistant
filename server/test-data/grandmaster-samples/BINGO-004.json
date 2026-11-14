@@ -1,0 +1,60 @@
+{
+  "testId": "BINGO-004",
+  "category": "second-turn-bingo",
+  "source": {
+    "players": "Tim Weiss vs. Mina Le",
+    "tournament": "New York, NY (09/05/15)",
+    "round": 4,
+    "url": "https://www.cross-tables.com/annotated.php?u=22042",
+    "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22042.gcg",
+    "recordFormat": "GCG",
+    "dictionaryListed": "CSW15",
+    "verifiedAgainst": "CSW2024"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Mina Le",
+  "board": [
+    {
+      "row": 7,
+      "col": 3,
+      "letter": "M"
+    },
+    {
+      "row": 7,
+      "col": 4,
+      "letter": "I"
+    },
+    {
+      "row": 7,
+      "col": 5,
+      "letter": "Z"
+    },
+    {
+      "row": 7,
+      "col": 6,
+      "letter": "E"
+    },
+    {
+      "row": 7,
+      "col": 7,
+      "letter": "N"
+    }
+  ],
+  "rack": [
+    "I",
+    "O",
+    "R",
+    "R",
+    "R",
+    "S",
+    "W"
+  ],
+  "actualCommittedMove": {
+    "word": "WORRIERS",
+    "startRow": 2,
+    "startCol": 6,
+    "direction": "vertical",
+    "tilesUsed": 7,
+    "score": 67
+  }
+}

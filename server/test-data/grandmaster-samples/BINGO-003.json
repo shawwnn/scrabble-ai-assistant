@@ -1,0 +1,34 @@
+{
+  "testId": "BINGO-003",
+  "category": "opening-bingo",
+  "source": {
+    "players": "Kurt Davies vs. Tim Weiss",
+    "tournament": "New York, NY (09/05/15)",
+    "round": 18,
+    "url": "https://www.cross-tables.com/annotated.php?u=22086",
+    "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22086.gcg",
+    "recordFormat": "GCG",
+    "dictionaryListed": "CSW15",
+    "verifiedAgainst": "CSW2024"
+  },
+  "completedMoves": 0,
+  "nextPlayer": "Kurt Davies",
+  "board": [],
+  "rack": [
+    "A",
+    "E",
+    "E",
+    "F",
+    "S",
+    "T",
+    "T"
+  ],
+  "actualCommittedMove": {
+    "word": "FEATEST",
+    "startRow": 7,
+    "startCol": 3,
+    "direction": "horizontal",
+    "tilesUsed": 7,
+    "score": 78
+  }
+}

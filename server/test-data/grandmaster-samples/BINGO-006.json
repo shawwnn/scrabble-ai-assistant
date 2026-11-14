@@ -1,0 +1,60 @@
+{
+  "testId": "BINGO-006",
+  "category": "second-turn-bingo",
+  "source": {
+    "players": "Paul Holser vs. Jim Burlant",
+    "tournament": "Dallas, TX (09/19/15)",
+    "round": 4,
+    "url": "https://www.cross-tables.com/annotated.php?u=22127",
+    "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/221/anno22127.gcg",
+    "recordFormat": "GCG",
+    "dictionaryListed": "TWL15",
+    "verifiedAgainst": "NWL2023"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Jim Burlant",
+  "board": [
+    {
+      "row": 7,
+      "col": 7,
+      "letter": "A"
+    },
+    {
+      "row": 7,
+      "col": 8,
+      "letter": "X"
+    },
+    {
+      "row": 7,
+      "col": 9,
+      "letter": "I"
+    },
+    {
+      "row": 7,
+      "col": 10,
+      "letter": "O"
+    },
+    {
+      "row": 7,
+      "col": 11,
+      "letter": "N"
+    }
+  ],
+  "rack": [
+    "D",
+    "I",
+    "I",
+    "L",
+    "T",
+    "V",
+    "Y"
+  ],
+  "actualCommittedMove": {
+    "word": "VALIDITY",
+    "startRow": 6,
+    "startCol": 7,
+    "direction": "vertical",
+    "tilesUsed": 7,
+    "score": 66
+  }
+}

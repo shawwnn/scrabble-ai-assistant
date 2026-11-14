@@ -1,0 +1,60 @@
+{
+  "testId": "BINGO-005",
+  "category": "second-turn-bingo",
+  "source": {
+    "players": "Tim Weiss vs. Jason Keller",
+    "tournament": "Albany, NY (07/02/15)",
+    "round": 13,
+    "url": "https://www.cross-tables.com/annotated.php?u=22091",
+    "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22091.gcg",
+    "recordFormat": "GCG",
+    "dictionaryListed": "CSW12",
+    "verifiedAgainst": "CSW2024"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Jason Keller",
+  "board": [
+    {
+      "row": 7,
+      "col": 3,
+      "letter": "Q"
+    },
+    {
+      "row": 7,
+      "col": 4,
+      "letter": "U"
+    },
+    {
+      "row": 7,
+      "col": 5,
+      "letter": "A"
+    },
+    {
+      "row": 7,
+      "col": 6,
+      "letter": "R"
+    },
+    {
+      "row": 7,
+      "col": 7,
+      "letter": "E"
+    }
+  ],
+  "rack": [
+    "D",
+    "E",
+    "L",
+    "R",
+    "R",
+    "S",
+    "W"
+  ],
+  "actualCommittedMove": {
+    "word": "DRAWLERS",
+    "startRow": 5,
+    "startCol": 5,
+    "direction": "vertical",
+    "tilesUsed": 7,
+    "score": 68
+  }
+}

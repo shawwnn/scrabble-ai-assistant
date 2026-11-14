@@ -1,0 +1,284 @@
+[
+  {
+    "testId": "BINGO-001",
+    "category": "opening-bingo",
+    "source": {
+      "players": "Joey Mallick vs. Lloyd Mills",
+      "tournament": "Alpharetta, GA (09/05/15)",
+      "round": 5,
+      "url": "https://www.cross-tables.com/annotated.php?u=22000",
+      "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22000.gcg",
+      "recordFormat": "GCG",
+      "dictionaryListed": "TWL15",
+      "verifiedAgainst": "NWL2023"
+    },
+    "completedMoves": 0,
+    "nextPlayer": "Joey Mallick",
+    "board": [],
+    "rack": [
+      "A",
+      "F",
+      "L",
+      "N",
+      "O",
+      "R",
+      "T"
+    ],
+    "actualCommittedMove": {
+      "word": "FRONTAL",
+      "startRow": 7,
+      "startCol": 3,
+      "direction": "horizontal",
+      "tilesUsed": 7,
+      "score": 78
+    }
+  },
+  {
+    "testId": "BINGO-002",
+    "category": "opening-bingo",
+    "source": {
+      "players": "Michael Thelen vs. Josh Sokol",
+      "tournament": "Lake George, NY (10/16/15)",
+      "round": 3,
+      "url": "https://www.cross-tables.com/annotated.php?u=22250",
+      "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/222/anno22250.gcg",
+      "recordFormat": "GCG",
+      "dictionaryListed": "TWL15",
+      "verifiedAgainst": "NWL2023"
+    },
+    "completedMoves": 0,
+    "nextPlayer": "Michael Thelen",
+    "board": [],
+    "rack": [
+      "A",
+      "B",
+      "E",
+      "I",
+      "S",
+      "U",
+      "V"
+    ],
+    "actualCommittedMove": {
+      "word": "ABUSIVE",
+      "startRow": 7,
+      "startCol": 6,
+      "direction": "horizontal",
+      "tilesUsed": 7,
+      "score": 82
+    }
+  },
+  {
+    "testId": "BINGO-003",
+    "category": "opening-bingo",
+    "source": {
+      "players": "Kurt Davies vs. Tim Weiss",
+      "tournament": "New York, NY (09/05/15)",
+      "round": 18,
+      "url": "https://www.cross-tables.com/annotated.php?u=22086",
+      "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22086.gcg",
+      "recordFormat": "GCG",
+      "dictionaryListed": "CSW15",
+      "verifiedAgainst": "CSW2024"
+    },
+    "completedMoves": 0,
+    "nextPlayer": "Kurt Davies",
+    "board": [],
+    "rack": [
+      "A",
+      "E",
+      "E",
+      "F",
+      "S",
+      "T",
+      "T"
+    ],
+    "actualCommittedMove": {
+      "word": "FEATEST",
+      "startRow": 7,
+      "startCol": 3,
+      "direction": "horizontal",
+      "tilesUsed": 7,
+      "score": 78
+    }
+  },
+  {
+    "testId": "BINGO-004",
+    "category": "second-turn-bingo",
+    "source": {
+      "players": "Tim Weiss vs. Mina Le",
+      "tournament": "New York, NY (09/05/15)",
+      "round": 4,
+      "url": "https://www.cross-tables.com/annotated.php?u=22042",
+      "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22042.gcg",
+      "recordFormat": "GCG",
+      "dictionaryListed": "CSW15",
+      "verifiedAgainst": "CSW2024"
+    },
+    "completedMoves": 1,
+    "nextPlayer": "Mina Le",
+    "board": [
+      {
+        "row": 7,
+        "col": 3,
+        "letter": "M"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "letter": "I"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "letter": "Z"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "letter": "E"
+      },
+      {
+        "row": 7,
+        "col": 7,
+        "letter": "N"
+      }
+    ],
+    "rack": [
+      "I",
+      "O",
+      "R",
+      "R",
+      "R",
+      "S",
+      "W"
+    ],
+    "actualCommittedMove": {
+      "word": "WORRIERS",
+      "startRow": 2,
+      "startCol": 6,
+      "direction": "vertical",
+      "tilesUsed": 7,
+      "score": 67
+    }
+  },
+  {
+    "testId": "BINGO-005",
+    "category": "second-turn-bingo",
+    "source": {
+      "players": "Tim Weiss vs. Jason Keller",
+      "tournament": "Albany, NY (07/02/15)",
+      "round": 13,
+      "url": "https://www.cross-tables.com/annotated.php?u=22091",
+      "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22091.gcg",
+      "recordFormat": "GCG",
+      "dictionaryListed": "CSW12",
+      "verifiedAgainst": "CSW2024"
+    },
+    "completedMoves": 1,
+    "nextPlayer": "Jason Keller",
+    "board": [
+      {
+        "row": 7,
+        "col": 3,
+        "letter": "Q"
+      },
+      {
+        "row": 7,
+        "col": 4,
+        "letter": "U"
+      },
+      {
+        "row": 7,
+        "col": 5,
+        "letter": "A"
+      },
+      {
+        "row": 7,
+        "col": 6,
+        "letter": "R"
+      },
+      {
+        "row": 7,
+        "col": 7,
+        "letter": "E"
+      }
+    ],
+    "rack": [
+      "D",
+      "E",
+      "L",
+      "R",
+      "R",
+      "S",
+      "W"
+    ],
+    "actualCommittedMove": {
+      "word": "DRAWLERS",
+      "startRow": 5,
+      "startCol": 5,
+      "direction": "vertical",
+      "tilesUsed": 7,
+      "score": 68
+    }
+  },
+  {
+    "testId": "BINGO-006",
+    "category": "second-turn-bingo",
+    "source": {
+      "players": "Paul Holser vs. Jim Burlant",
+      "tournament": "Dallas, TX (09/19/15)",
+      "round": 4,
+      "url": "https://www.cross-tables.com/annotated.php?u=22127",
+      "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/221/anno22127.gcg",
+      "recordFormat": "GCG",
+      "dictionaryListed": "TWL15",
+      "verifiedAgainst": "NWL2023"
+    },
+    "completedMoves": 1,
+    "nextPlayer": "Jim Burlant",
+    "board": [
+      {
+        "row": 7,
+        "col": 7,
+        "letter": "A"
+      },
+      {
+        "row": 7,
+        "col": 8,
+        "letter": "X"
+      },
+      {
+        "row": 7,
+        "col": 9,
+        "letter": "I"
+      },
+      {
+        "row": 7,
+        "col": 10,
+        "letter": "O"
+      },
+      {
+        "row": 7,
+        "col": 11,
+        "letter": "N"
+      }
+    ],
+    "rack": [
+      "D",
+      "I",
+      "I",
+      "L",
+      "T",
+      "V",
+      "Y"
+    ],
+    "actualCommittedMove": {
+      "word": "VALIDITY",
+      "startRow": 6,
+      "startCol": 7,
+      "direction": "vertical",
+      "tilesUsed": 7,
+      "score": 66
+    }
+  }
+]

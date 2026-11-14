@@ -1,0 +1,34 @@
+{
+  "testId": "BINGO-001",
+  "category": "opening-bingo",
+  "source": {
+    "players": "Joey Mallick vs. Lloyd Mills",
+    "tournament": "Alpharetta, GA (09/05/15)",
+    "round": 5,
+    "url": "https://www.cross-tables.com/annotated.php?u=22000",
+    "gcgUrl": "https://www.cross-tables.com/annotated/selfgcg/220/anno22000.gcg",
+    "recordFormat": "GCG",
+    "dictionaryListed": "TWL15",
+    "verifiedAgainst": "NWL2023"
+  },
+  "completedMoves": 0,
+  "nextPlayer": "Joey Mallick",
+  "board": [],
+  "rack": [
+    "A",
+    "F",
+    "L",
+    "N",
+    "O",
+    "R",
+    "T"
+  ],
+  "actualCommittedMove": {
+    "word": "FRONTAL",
+    "startRow": 7,
+    "startCol": 3,
+    "direction": "horizontal",
+    "tilesUsed": 7,
+    "score": 78
+  }
+}
