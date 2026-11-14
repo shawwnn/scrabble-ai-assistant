@@ -1,0 +1,26 @@
+{
+  "testId": "GM-004",
+  "source": {
+    "players": "Nigel Peltier vs. Nigel Richards",
+    "tournament": "34th National Championship (2025)",
+    "round": 23,
+    "url": "https://naspa.cross-tables.com/annotated.php?u=56190",
+    "recordFormat": "GCG",
+    "dictionary": "NWL2023"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Nigel Richards",
+  "board": [
+    { "row": 7, "col": 7, "letter": "U" },
+    { "row": 7, "col": 8, "letter": "P" },
+    { "row": 7, "col": 9, "letter": "O" }
+  ],
+  "rack": ["B", "E", "L", "N", "O", "R", "T"],
+  "actualCommittedMove": {
+    "word": "NOB",
+    "startRow": 6,
+    "startCol": 7,
+    "direction": "horizontal",
+    "score": 17
+  }
+}

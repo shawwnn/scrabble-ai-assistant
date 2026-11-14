@@ -1,0 +1,29 @@
+{
+  "testId": "GM-002",
+  "source": {
+    "players": "Komol Panyasophonlert vs. Nigel Richards",
+    "tournament": "12th World Championship (2013)",
+    "round": 38,
+    "url": "https://naspa.cross-tables.com/annotated.php?u=16589",
+    "recordFormat": "GCG",
+    "dictionary": "CSW12"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Nigel Richards",
+  "board": [
+    { "row": 7, "col": 6, "letter": "E" },
+    { "row": 7, "col": 7, "letter": "U" },
+    { "row": 7, "col": 8, "letter": "P" },
+    { "row": 7, "col": 9, "letter": "N" },
+    { "row": 7, "col": 10, "letter": "E" },
+    { "row": 7, "col": 11, "letter": "A" }
+  ],
+  "rack": ["B", "G", "I", "M", "O", "S", "W"],
+  "actualCommittedMove": {
+    "word": "BEWIG",
+    "startRow": 6,
+    "startCol": 10,
+    "direction": "vertical",
+    "score": 22
+  }
+}

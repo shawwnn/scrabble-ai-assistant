@@ -1,0 +1,25 @@
+{
+  "testId": "GM-001",
+  "source": {
+    "players": "Nigel Richards vs. Jim Kramer",
+    "tournament": "12th World Championship (2013)",
+    "round": 18,
+    "url": "https://naspa.cross-tables.com/annotated.php?u=16372",
+    "recordFormat": "GCG",
+    "dictionary": "CSW12"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Jim Kramer",
+  "board": [
+    { "row": 6, "col": 7, "letter": "X" },
+    { "row": 7, "col": 7, "letter": "I" }
+  ],
+  "rack": ["A", "A", "E", "M", "O", "S", "U"],
+  "actualCommittedMove": {
+    "word": "AMU",
+    "startRow": 6,
+    "startCol": 6,
+    "direction": "vertical",
+    "score": 21
+  }
+}

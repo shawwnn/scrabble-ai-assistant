@@ -1,0 +1,27 @@
+{
+  "testId": "GM-005",
+  "source": {
+    "players": "Nigel Richards vs. Kenji Matsumoto",
+    "tournament": "34th National Championship (2025)",
+    "round": 20,
+    "url": "https://naspa.cross-tables.com/annotated.php?u=55256",
+    "recordFormat": "GCG",
+    "dictionary": "NWL2023"
+  },
+  "completedMoves": 1,
+  "nextPlayer": "Kenji Matsumoto",
+  "board": [
+    { "row": 6, "col": 7, "letter": "G" },
+    { "row": 7, "col": 7, "letter": "A" },
+    { "row": 8, "col": 7, "letter": "B" },
+    { "row": 9, "col": 7, "letter": "Y" }
+  ],
+  "rack": ["A", "E", "F", "H", "U", "U", "Y"],
+  "actualCommittedMove": {
+    "word": "FUGUE",
+    "startRow": 6,
+    "startCol": 5,
+    "direction": "horizontal",
+    "score": 11
+  }
+}
