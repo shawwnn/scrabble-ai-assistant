@@ -40,7 +40,6 @@ function rankMoves(moves: Move[], limit: number): Move[] {
 }
 
 function compareMoves(a: Move, b: Move): number {
-  if (a.bingo !== b.bingo) return a.bingo ? -1 : 1;
   if (a.score !== b.score) return b.score - a.score;
   if (a.row !== b.row) return a.row - b.row;
   if (a.col !== b.col) return a.col - b.col;

@@ -58,15 +58,15 @@ describe("ordinary move detection", () => {
     expect(suggestions).toEqual([]);
   });
 
-  it("ranks the bingo first and caps suggestions at five", () => {
+  it("sorts suggestions by score and caps them at five", () => {
     const dictionary = createDictionary(["PAINTER", "PAINT", "PAIN", "PAIR", "PINE", "PANT", "PATE"]);
     const { recommendation, suggestions } = analyzeBoard([], ["P", "A", "I", "N", "T", "E", "R"], dictionary);
     expect(suggestions).toHaveLength(5);
     expect(suggestions[0]).toMatchObject({ word: "PAINTER", bingo: true });
     expect(suggestions[0]).toMatchObject({ word: recommendation.word, row: recommendation.row, col: recommendation.col });
-    const bingoCount = suggestions.filter((move) => move.bingo).length;
-    expect(bingoCount).toBeGreaterThan(0);
-    expect(suggestions.slice(0, bingoCount).every((move) => move.bingo)).toBe(true);
+    for (let i = 1; i < suggestions.length; i += 1) {
+      expect(suggestions[i - 1].score).toBeGreaterThanOrEqual(suggestions[i].score);
+    }
   });
 
   it("rejects placements whose crossword is not a word", () => {
@@ -80,12 +80,12 @@ describe("ordinary move detection", () => {
 });
 
 describe("move selection", () => {
-  it("prefers a bingo over a higher-scoring non-bingo move", () => {
+  it("ranks a higher-scoring non-bingo move above a lower-scoring bingo", () => {
     const best = selectBestMove([
       move({ word: "QUIZ", score: 90, tiles: [{ row: 7, col: 7, letter: "Q" }] }),
       move({ word: "PAINTER", score: 60, bingo: true, bingoBonus: 50, tiles: Array(7).fill({ row: 7, col: 7, letter: "P" }) }),
     ]);
-    expect(best.word).toBe("PAINTER");
+    expect(best.word).toBe("QUIZ");
   });
 
   it("breaks equal scores by lower row, then lower column, then horizontal before vertical, then alphabetical word", () => {
