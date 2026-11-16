@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { supabase } from "../db/supabase.js";
+import { getSupabase } from "../db/supabase.js";
 import { checkWords } from "../lib/dictionary";
 import type { DictionaryName } from "@shared/api";
 import { validateMove, type Board, type BoardTile } from "../game/rules.js";
@@ -20,7 +20,7 @@ const isRackTile = (value: unknown): value is RackTile => {
 };
 
 async function loadGame(gameId: string) {
-  const { data: gameData, error: gameError } = await supabase
+  const { data: gameData, error: gameError } = await getSupabase()
     .from("games")
     .select("id,status,dictionary,current_player_id,board,bag")
     .eq("id", gameId)
@@ -29,7 +29,7 @@ async function loadGame(gameId: string) {
   if (!gameData) return null;
   const game = gameData as GameRow;
 
-  const { data: membershipData, error: membershipError } = await supabase
+  const { data: membershipData, error: membershipError } = await getSupabase()
     .from("game_players")
     .select("player_id,score,rack,turn_order")
     .eq("game_id", gameId)
@@ -39,12 +39,12 @@ async function loadGame(gameId: string) {
   const playerIds = memberships.map(({ player_id }) => player_id);
   const names = new Map<string, string>();
   if (playerIds.length) {
-    const { data: players, error: playersError } = await supabase.from("players").select("id,name").in("id", playerIds);
+    const { data: players, error: playersError } = await getSupabase().from("players").select("id,name").in("id", playerIds);
     if (playersError) throw playersError;
     for (const player of players ?? []) names.set(player.id as string, player.name as string);
   }
 
-  const { data: turns, error: turnsError } = await supabase
+  const { data: turns, error: turnsError } = await getSupabase()
     .from("turns")
     .select("id,player_id,turn_number,move,words,score,created_at")
     .eq("game_id", gameId)
@@ -121,7 +121,7 @@ router.post("/:gameId/moves", async (req, res) => {
     const dictionary = checkWords(dictionaryFor(game.dictionary), validation.words);
     if (!dictionary.valid) return res.status(422).json({ error: `Some words are not valid: ${dictionary.invalidWords.join(", ")}.` });
 
-    const { data: gameState, error: gameStateError } = await supabase.from("games").select("bag").eq("id", game.id).single();
+    const { data: gameState, error: gameStateError } = await getSupabase().from("games").select("bag").eq("id", game.id).single();
     if (gameStateError) throw gameStateError;
     const bag = Array.isArray(gameState.bag) ? (gameState.bag as RackTile[]).filter(isRackTile) : [];
     const drawn = bag.slice(0, usedTileIds.size);
@@ -130,11 +130,11 @@ router.post("/:gameId/moves", async (req, res) => {
     const nextPlayer = game.players.find((candidate) => candidate.turnOrder !== player.turnOrder) ?? player;
     const turnNumber = (game.turns[0]?.turnNumber ?? 0) + 1;
 
-    const { error: gameUpdateError } = await supabase.from("games").update({ board: boardAfter, bag: bag.slice(drawn.length), current_player_id: nextPlayer.id, updated_at: new Date().toISOString() }).eq("id", game.id);
+    const { error: gameUpdateError } = await getSupabase().from("games").update({ board: boardAfter, bag: bag.slice(drawn.length), current_player_id: nextPlayer.id, updated_at: new Date().toISOString() }).eq("id", game.id);
     if (gameUpdateError) throw gameUpdateError;
-    const { error: playerUpdateError } = await supabase.from("game_players").update({ rack: rackAfter, score: player.score + validation.score }).eq("game_id", game.id).eq("player_id", player.id);
+    const { error: playerUpdateError } = await getSupabase().from("game_players").update({ rack: rackAfter, score: player.score + validation.score }).eq("game_id", game.id).eq("player_id", player.id);
     if (playerUpdateError) throw playerUpdateError;
-    const { error: turnError } = await supabase.from("turns").insert({ game_id: game.id, player_id: player.id, turn_number: turnNumber, move: placements, words: validation.words, score: validation.score, rack_before: player.rack, rack_after: rackAfter, board_after: boardAfter });
+    const { error: turnError } = await getSupabase().from("turns").insert({ game_id: game.id, player_id: player.id, turn_number: turnNumber, move: placements, words: validation.words, score: validation.score, rack_before: player.rack, rack_after: rackAfter, board_after: boardAfter });
     if (turnError) throw turnError;
     return res.json(await loadGame(game.id));
   } catch (error) {

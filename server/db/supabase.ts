@@ -1,8 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SECRET_KEY!,
-);
+let client: SupabaseClient | undefined;
 
-export { supabase };
+export function getSupabase(): SupabaseClient {
+  client ??= createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!);
+  return client;
+}

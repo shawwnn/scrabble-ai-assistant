@@ -1,3 +1,4 @@
+
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -16,10 +17,7 @@ export function createServer() {
   app.use(express.json({ limit: "15mb" }));
   app.use(express.urlencoded({ extended: true }));
 
-  loadDictionary("CSW2024");
-  loadDictionary("NWL2023");
-
-  // Example API routes
+  // API routes
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
