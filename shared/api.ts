@@ -61,7 +61,15 @@ export interface AnalyzeResponse {
 export interface AnalyzeErrorResponse {
   error: string;
   issues?: string[];
+  code?: ImageAnalyzeErrorCode;
 }
+
+export const IMAGE_ANALYZE_ERROR_CODES = [
+  "GEMINI_API_ERROR",
+  "IMAGE_NOT_RECOGNIZED",
+  "OCR_EXTRACTION_FAILED",
+] as const;
+export type ImageAnalyzeErrorCode = (typeof IMAGE_ANALYZE_ERROR_CODES)[number];
 
 export interface ImageAnalyzeRequest {
   image: { mimeType: string; data: string };

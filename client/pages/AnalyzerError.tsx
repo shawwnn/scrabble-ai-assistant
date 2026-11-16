@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import UploadErrorNotice from "@/components/analyzer/UploadErrorNotice";
 import { useSyncExternalStore } from "react";
-import { getAnalysisError, subscribeToSelectedScreenshot } from "@/lib/analyzer-upload-store";
+import { getAnalysisError, getAnalysisErrorCode, subscribeToSelectedScreenshot } from "@/lib/analyzer-upload-store";
 
 export default function AnalyzerError() {
   const error = useSyncExternalStore(subscribeToSelectedScreenshot, getAnalysisError);
+  const code = useSyncExternalStore(subscribeToSelectedScreenshot, getAnalysisErrorCode);
   return (
     <section className="flex flex-col items-center gap-8 px-2 py-10 text-center md:py-14">
       <div>
@@ -14,7 +15,7 @@ export default function AnalyzerError() {
         </p>
       </div>
       <div className="w-full max-w-xl">
-        <UploadErrorNotice />
+        <UploadErrorNotice code={code} />
       </div>
       <Link
         to="/analyzer/upload"

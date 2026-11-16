@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { requestImageAnalysis } from "@/lib/image-analyze-api";
+import { ImageAnalyzeError, requestImageAnalysis } from "@/lib/image-analyze-api";
 import { getSelectedScreenshot, setAnalysisError, setAnalysisResult } from "@/lib/analyzer-upload-store";
 
 export function useAnalyzerProcessing() {
@@ -16,7 +16,7 @@ export function useAnalyzerProcessing() {
     setActiveIndex(1);
     requestImageAnalysis(file)
       .then((result) => { setActiveIndex(5); setAnalysisResult(result); navigate("/analyzer/results", { replace: true }); })
-      .catch((error: unknown) => { setAnalysisError(error instanceof Error ? error.message : "Image analysis failed."); navigate("/analyzer/error", { replace: true }); });
+      .catch((error: unknown) => { setAnalysisError(error instanceof Error ? error.message : "Image analysis failed.", error instanceof ImageAnalyzeError ? error.code : "GEMINI_API_ERROR"); navigate("/analyzer/error", { replace: true }); });
   }, [navigate]);
 
   return activeIndex;
