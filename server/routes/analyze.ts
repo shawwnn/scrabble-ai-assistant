@@ -63,7 +63,7 @@ async function recognizeBoard(image: { mimeType: string; data: string }): Promis
   if (!text) throw new Error("Gemini returned no OCR result.");
   const parsed = ocrResponse.safeParse(JSON.parse(text));
   if (!parsed.success) throw new Error("Gemini returned invalid board or rack data.");
-  return parsed.data;
+  return parsed.data as { board: BoardTileInput[]; rack: string[] };
 }
 
 export const handleAnalyze: RequestHandler = (req, res) => {
