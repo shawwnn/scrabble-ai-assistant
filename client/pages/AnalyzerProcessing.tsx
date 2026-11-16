@@ -2,13 +2,12 @@ import ProcessingProgress from "@/components/analyzer/ProcessingProgress";
 import ProcessingSpinner from "@/components/analyzer/ProcessingSpinner";
 import ProcessingStepper from "@/components/analyzer/ProcessingStepper";
 import StageToast from "@/components/analyzer/StageToast";
-import { useSimulatedProcessing } from "@/hooks/useSimulatedProcessing";
+import { useAnalyzerProcessing } from "@/hooks/useAnalyzerProcessing";
 import { PROCESSING_STAGES } from "@/lib/analyzer-processing";
 
 export default function AnalyzerProcessing() {
-  const activeIndex = useSimulatedProcessing();
+  const activeIndex = useAnalyzerProcessing();
   const total = PROCESSING_STAGES.length;
-  const percent = Math.round((Math.min(activeIndex, total) / total) * 100);
 
   return (
     <section className="flex flex-col items-center gap-8 px-2 py-10 text-center md:py-14">
@@ -23,7 +22,7 @@ export default function AnalyzerProcessing() {
         <h2 className="mb-5 font-semibold">Processing steps</h2>
         <ProcessingStepper activeIndex={activeIndex} />
         <div className="mt-6 border-t border-border pt-5">
-          <ProcessingProgress percent={percent} />
+          <ProcessingProgress />
         </div>
       </div>
       {activeIndex < total && (

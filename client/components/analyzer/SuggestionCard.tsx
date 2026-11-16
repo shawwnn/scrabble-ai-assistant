@@ -1,5 +1,4 @@
 import type { Move } from "@shared/api";
-import { DEMO_RACK } from "@/lib/analyzer-demo";
 
 interface SuggestionCardProps {
   move: Move;
@@ -8,7 +7,7 @@ interface SuggestionCardProps {
 }
 
 function usageLabel(move: Move) {
-  return `${move.tiles.length} of ${DEMO_RACK.length} tiles`;
+  return `${move.tiles.length} tiles used`;
 }
 
 function noteLabel(move: Move) {

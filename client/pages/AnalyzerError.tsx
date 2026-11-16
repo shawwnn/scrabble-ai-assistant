@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
 import UploadErrorNotice from "@/components/analyzer/UploadErrorNotice";
+import { useSyncExternalStore } from "react";
+import { getAnalysisError, subscribeToSelectedScreenshot } from "@/lib/analyzer-upload-store";
 
 export default function AnalyzerError() {
+  const error = useSyncExternalStore(subscribeToSelectedScreenshot, getAnalysisError);
   return (
     <section className="flex flex-col items-center gap-8 px-2 py-10 text-center md:py-14">
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">Extraction Failed</h1>
         <p className="mx-auto mt-3 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
-          The image could not be read. Try again with a clearer screenshot.
+          {error ?? "The image could not be read. Try again with a clearer screenshot."}
         </p>
       </div>
       <div className="w-full max-w-xl">

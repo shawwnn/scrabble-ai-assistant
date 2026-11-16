@@ -62,3 +62,8 @@ export interface AnalyzeErrorResponse {
   error: string;
   issues?: string[];
 }
+
+export interface ImageAnalyzeRequest {
+  image: { mimeType: string; data: string };
+  dictionary?: DictionaryName;
+}

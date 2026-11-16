@@ -11,7 +11,7 @@ export default function AnalyzerResults() {
         <p className="text-xs font-semibold uppercase tracking-wider text-primary">Step 3</p>
         <h1 className="mt-2 text-2xl font-extrabold tracking-tight md:text-3xl">Analysis results</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-          Top legal moves for the demo board and rack. Suggestions are informational only.
+          Highest-scoring legal moves found from the uploaded Scrabble board and rack.
         </p>
       </header>
 

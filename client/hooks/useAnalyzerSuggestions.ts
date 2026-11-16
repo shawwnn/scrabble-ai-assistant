@@ -1,11 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { requestAnalysis } from "@/lib/analyze-api";
-import { DEMO_BOARD, DEMO_RACK } from "@/lib/analyzer-demo";
+import { useSyncExternalStore } from "react";
+import { getAnalysisResult, subscribeToSelectedScreenshot } from "@/lib/analyzer-upload-store";
 
 export function useAnalyzerSuggestions() {
-  return useQuery({
-    queryKey: ["analyzer", "suggestions", "demo"],
-    queryFn: () => requestAnalysis({ board: DEMO_BOARD, rack: DEMO_RACK }),
-    retry: false,
-  });
+  const data = useSyncExternalStore(subscribeToSelectedScreenshot, getAnalysisResult);
+  return { data, error: null, isLoading: !data };
 }
