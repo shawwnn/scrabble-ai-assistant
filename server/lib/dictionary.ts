@@ -13,6 +13,12 @@ export interface Dictionary {
   isWord(word: string): boolean;
 }
 
+export type DictionaryCheckResult = {
+  valid: boolean;
+  invalidWords: string[];
+  dictionary: DictionaryName;
+};
+
 const SOURCES: Record<DictionaryName, { file: string; parseLines: (contents: string) => string[] }> = {
   CSW2024: { file: "CSW2024.txt", parseLines: parseCswLines },
   NWL2023: { file: "NWL2023.txt", parseLines: parseNwlLines },
@@ -23,7 +29,7 @@ const loaded = new Map<string, Dictionary>();
 export class DictionaryUnavailableError extends Error {}
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const defaultDictionaryDir = path.resolve(moduleDir, "../../backend/data-dict");
+const defaultDictionaryDir = path.resolve(moduleDir, "../data-dict");
 
 export function dictionaryPath(name: DictionaryName): string {
   const directory = process.env.DICTIONARY_DIR ?? defaultDictionaryDir;
@@ -40,6 +46,12 @@ export function loadDictionary(name: DictionaryName): Dictionary {
   const dictionary = createDictionary(SOURCES[name].parseLines(readFileSync(file, "utf8")));
   loaded.set(file, dictionary);
   return dictionary;
+}
+
+export function checkWords(name: DictionaryName, words: string[]): DictionaryCheckResult {
+  const dictionary = loadDictionary(name);
+  const invalidWords = words.filter((word) => !dictionary.isWord(word));
+  return { valid: invalidWords.length === 0, invalidWords, dictionary: name };
 }
 
 export function createDictionary(words: Iterable<string>): Dictionary {

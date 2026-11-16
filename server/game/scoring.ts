@@ -1,5 +1,3 @@
-//backend/src/game/scoring.ts
-
 import { getPremium } from "./rules.js";
 
 type CurrentMoveTile = {

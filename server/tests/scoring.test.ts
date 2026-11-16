@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { scoreMove } from "../src/game/scoring.js";
+import { scoreMove } from "../game/scoring.js";
 
 const pendingTile = (key: string, letter: string) => ({
   key,
