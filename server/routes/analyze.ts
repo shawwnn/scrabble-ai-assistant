@@ -52,7 +52,7 @@ function logImageAnalyzeFailure(failure: ImageAnalyzeFailure): void {
 export async function recognizeBoard(image: { mimeType: string; data: string }): Promise<{ board: BoardTileInput[]; rack: string[] }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new ImageAnalyzeFailure("GEMINI_API_ERROR", 503, "Gemini API key is not configured");
-  const model = process.env.GEMINI_TEST_MODEL ?? "gemini-2.5-flash";
+  const model = process.env.GEMINI_TEST_MODEL ?? "gemini-3.8-flash";
   let response: Response;
   try {
     response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {

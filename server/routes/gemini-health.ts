@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
 
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-3.8-flash";
 
 export const handleGeminiHealth: RequestHandler = async (_req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;

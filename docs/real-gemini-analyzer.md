@@ -56,7 +56,7 @@ Set the Gemini key only in the backend environment:
 GEMINI_API_KEY=your-key
 ```
 
-An optional `GEMINI_TEST_MODEL` overrides the default `gemini-2.5-flash` model. Never place either value in client code or expose the key through a Vite variable.
+An optional `GEMINI_TEST_MODEL` overrides the default `gemini-3.8-flash` model. Never place either value in client code or expose the key through a Vite variable.
 
 The Express JSON body limit is 15 MB. The frontend currently rejects images larger than 10 MB.
 
