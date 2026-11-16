@@ -80,12 +80,12 @@ describe("ordinary move detection", () => {
 });
 
 describe("move selection", () => {
-  it("ranks a higher-scoring non-bingo move above a lower-scoring bingo", () => {
+  it("ranks a bingo above a higher-scoring non-bingo move", () => {
     const best = selectBestMove([
       move({ word: "QUIZ", score: 90, tiles: [{ row: 7, col: 7, letter: "Q" }] }),
       move({ word: "PAINTER", score: 60, bingo: true, bingoBonus: 50, tiles: Array(7).fill({ row: 7, col: 7, letter: "P" }) }),
     ]);
-    expect(best.word).toBe("QUIZ");
+    expect(best.word).toBe("PAINTER");
   });
 
   it("breaks equal scores by lower row, then lower column, then horizontal before vertical, then alphabetical word", () => {

@@ -5,7 +5,6 @@ import { handleDemo } from "./routes/demo";
 import { handleAnalyze } from "./routes/analyze";
 import gamesRouter from "./routes/games";
 import validateMoveRouter from "./routes/validateMove";
-import { loadDictionary } from "./lib/dictionary";
 
 export function createServer() {
   const app = express();
@@ -14,9 +13,6 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  loadDictionary("CSW2024");
-  loadDictionary("NWL2023");
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
