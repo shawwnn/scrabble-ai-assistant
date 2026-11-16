@@ -66,7 +66,7 @@ The Express JSON body limit is 15 MB. The frontend currently rejects images larg
 
 ## Verification note
 
-The OCR contract validation fixtures cover three empty-board cases and verify that no board tiles are detected, all seven rack letters are preserved in order, and the recognized rack is passed to the real CSW2024 move analyzer:
+The OCR request and client wait up to three minutes. The first two minutes are divided evenly across the six visible processing stages (20 seconds per stage); the final minute remains available for the backend/Gemini request to finish. The OCR contract validation fixtures cover three empty-board cases and verify that no board tiles are detected, all seven rack letters are preserved in order, and the recognized rack is passed to the real CSW2024 move analyzer:
 
 - `EASAFAZ` → `FAZES` — passed.
 - `YGSVEZO` → expected `GYVES` — OCR validation passed, but the current CSW2024 analyzer ranks `ZYGOSE` higher.

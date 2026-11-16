@@ -71,12 +71,22 @@ export async function recognizeBoard(image: { mimeType: string; data: string }):
           }, required: ["board", "rack"] },
         },
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(180_000),
     });
   } catch (error) {
     throw new ImageAnalyzeFailure("GEMINI_API_ERROR", 502, error instanceof Error && error.name === "TimeoutError" ? "Gemini request timed out" : "Gemini request failed");
   }
-  if (!response.ok) throw new ImageAnalyzeFailure("GEMINI_API_ERROR", response.status === 429 ? 429 : response.status >= 500 ? 502 : 502, `Gemini returned HTTP ${response.status}`);
+  if (!response.ok) {
+    const status = response.status;
+    const reason = status === 401 || status === 403
+      ? `Gemini rejected the API credentials (HTTP ${status})`
+      : status === 404
+        ? `Gemini model is unavailable (HTTP ${status})`
+        : status === 429
+          ? "Gemini quota or rate limit reached (HTTP 429)"
+          : `Gemini returned HTTP ${status}`;
+    throw new ImageAnalyzeFailure("GEMINI_API_ERROR", status === 429 ? 429 : 502, reason);
+  }
   let payload: { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
   try {
     payload = await response.json() as typeof payload;
@@ -151,8 +161,17 @@ export const handleImageAnalyze: RequestHandler = async (req, res) => {
       ? error
       : new ImageAnalyzeFailure("GEMINI_API_ERROR", 502, "Unexpected image analysis failure");
     logImageAnalyzeFailure(failure);
+    const geminiMessage = failure.reason.includes("credentials")
+      ? "The AI service credentials were rejected. Please contact the administrator."
+      : failure.reason.includes("quota or rate limit")
+        ? "The AI service is busy or its quota has been reached. Please try again later."
+        : failure.reason.includes("model is unavailable")
+          ? "The AI model configuration is unavailable. Please contact the administrator."
+          : failure.reason.includes("timed out")
+            ? "The AI service did not respond in time. Please try again."
+            : "The AI service is temporarily unavailable. Please try again later.";
     const messages = {
-      GEMINI_API_ERROR: "The AI service is temporarily unavailable. Please try again later.",
+      GEMINI_API_ERROR: geminiMessage,
       IMAGE_NOT_RECOGNIZED: "We couldn't find a recognizable Scrabble board and rack in this image.",
       OCR_EXTRACTION_FAILED: "The image was received, but its board and rack data could not be extracted.",
     } satisfies Record<ImageAnalyzeErrorCode, string>;

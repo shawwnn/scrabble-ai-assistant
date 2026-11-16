@@ -26,7 +26,10 @@ export const PROCESSING_STAGES: ProcessingStage[] = [
   { label: "Results Ready", description: "Redirecting to the analysis results page." },
 ];
 
-export const STAGE_DURATION_MS = 2000;
+/** The first two minutes are divided evenly across the six visible stages. */
+export const PROCESSING_WINDOW_MS = 120_000;
+export const TOTAL_PROCESSING_TIMEOUT_MS = 180_000;
+export const STAGE_DURATION_MS = PROCESSING_WINDOW_MS / PROCESSING_STAGES.length;
 
 export function getStageStatus(index: number, activeIndex: number): StageStatus {
   if (index < activeIndex) return "completed";
