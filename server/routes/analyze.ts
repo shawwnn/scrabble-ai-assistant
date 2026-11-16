@@ -35,7 +35,7 @@ const ocrResponse = z.object({
   rack: z.array(letter.transform((value) => value.toUpperCase())).min(1).max(RACK_SIZE),
 });
 
-async function recognizeBoard(image: ImageAnalyzeRequest["image"]): Promise<{ board: BoardTileInput[]; rack: string[] }> {
+async function recognizeBoard(image: { mimeType: string; data: string }): Promise<{ board: BoardTileInput[]; rack: string[] }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("Gemini is not configured.");
   const model = process.env.GEMINI_TEST_MODEL ?? "gemini-2.5-flash";
@@ -109,8 +109,8 @@ export const handleImageAnalyze: RequestHandler = async (req, res) => {
     return;
   }
   try {
-    const { board, rack } = await recognizeBoard(parsed.data);
-    const dictionaryName = parsed.data.dictionary;
+    const { image, dictionary: dictionaryName } = parsed.data as ImageAnalyzeRequest;
+    const { board, rack } = await recognizeBoard(image);
     const dictionary = loadDictionary(dictionaryName);
     const result = analyzeBoard(board, rack, dictionary);
     if (result.issues.length > 0) {
