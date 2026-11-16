@@ -6,6 +6,7 @@ import { handleAnalyze } from "./routes/analyze";
 import gamesRouter from "./routes/games";
 import validateMoveRouter from "./routes/validateMove";
 import { loadDictionary } from "./lib/dictionary";
+import { handleGeminiHealth } from "./routes/gemini-health";
 
 export function createServer() {
   const app = express();
@@ -26,6 +27,7 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
   app.post("/api/analyze", handleAnalyze);
+  app.get("/api/gemini-health", handleGeminiHealth);
   app.use("/api/games", gamesRouter);
   app.use("/api/validate-move", validateMoveRouter);
 
