@@ -23,7 +23,7 @@ Full source URLs and GCG URLs are in each fixture's `source` block.
 2. Confirmed players, tournament, round, and dictionary on the annotated page. Each game is a tournament game; club games are excluded.
 3. Replayed the moves with a standalone script (not committed to the repo). Coordinates follow GCG notation: `8D` is row 8, column D (horizontal); `H7` is column H, row 7 (vertical). Stored as zero-based `row` and `col`.
 4. Scored each play from `code/shared/tiles.ts` and `code/shared/premiums.ts`. The center square is treated as a double-word square.
-5. Checked every word against `code/backend/data-dict/CSW2024.txt` (CSW games) or `NWL2023.txt` (TWL games).
+5. Checked every word against `server/data-dict/CSW2024.txt` (CSW games) or `NWL2023.txt` (TWL games).
 
 Results: for all six fixtures, the recomputed score matches the GCG score, all words are in the lexicon, and each rack contains seven real tiles with no blanks.
 

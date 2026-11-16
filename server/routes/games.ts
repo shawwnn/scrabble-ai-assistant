@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { supabase } from "../db/supabase.js";
-import { checkWords, type DictionaryName } from "../game/dictionary.js";
+import { checkWords } from "../lib/dictionary";
+import type { DictionaryName } from "@shared/api";
 import { validateMove, type Board, type BoardTile } from "../game/rules.js";
 
 const router: Router = Router();
@@ -10,7 +11,7 @@ type GameRow = { id: string; status: string; dictionary: string; current_player_
 type GamePlayerRow = { player_id: string; score: number; rack: RackTile[]; turn_order: number };
 
 const dictionaryFor = (dictionary: string): DictionaryName =>
-  dictionary === "TWL" || dictionary === "US" ? "US" : "UK";
+  dictionary === "TWL" || dictionary === "US" ? "NWL2023" : "CSW2024";
 const keyFor = (row: number, col: number) => `${row},${col}`;
 const isRackTile = (value: unknown): value is RackTile => {
   if (!value || typeof value !== "object") return false;

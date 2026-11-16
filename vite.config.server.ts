@@ -1,8 +1,20 @@
 import { defineConfig } from "vite";
+import { mkdirSync, readdirSync, copyFileSync } from "node:fs";
 import path from "path";
 
 // Server build configuration
 export default defineConfig({
+  plugins: [{
+    name: "copy-server-dictionaries",
+    closeBundle() {
+      const source = path.resolve(__dirname, "server/data-dict");
+      const destination = path.resolve(__dirname, "dist/data-dict");
+      mkdirSync(destination, { recursive: true });
+      for (const file of readdirSync(source)) {
+        copyFileSync(path.join(source, file), path.join(destination, file));
+      }
+    },
+  }],
   build: {
     lib: {
       entry: path.resolve(__dirname, "server/node-build.ts"),

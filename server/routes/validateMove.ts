@@ -3,7 +3,8 @@
 import { Router } from "express";
 
 import { getWordsFromMove } from "../game/words.js";
-import { checkWords, type DictionaryName } from "../game/dictionary.js";
+import { checkWords } from "../lib/dictionary";
+import type { DictionaryName as SharedDictionaryName } from "@shared/api";
 import { scoreMove } from "../game/scoring.js";
 
 const router: Router = Router();
@@ -14,10 +15,12 @@ type CurrentMoveTile = {
   tile: Record<string, unknown>;
 };
 
+type LegacyDictionaryName = "US" | "UK";
+
 router.post("/", (req, res) => {
   const { currentMoveTiles, dictionary } = req.body as {
     currentMoveTiles: CurrentMoveTile[];
-    dictionary?: DictionaryName;
+    dictionary?: LegacyDictionaryName;
   };
 
   const moveTiles = currentMoveTiles.map(
@@ -36,7 +39,8 @@ router.post("/", (req, res) => {
 
   const words = formedWords.map(({ word }) => word);
 
-  const selectedDictionary: DictionaryName = dictionary ?? "UK";
+  const selectedDictionary: LegacyDictionaryName = dictionary ?? "UK";
+  const dictionaryName: SharedDictionaryName = selectedDictionary === "US" ? "NWL2023" : "CSW2024";
 
   // An empty word list is not a valid move. Without this guard, checkWords()
   // considers it valid because there are no invalid dictionary entries, which
@@ -52,7 +56,7 @@ router.post("/", (req, res) => {
     });
   }
 
-  const result = checkWords(selectedDictionary, words);
+  const result = checkWords(dictionaryName, words);
 
   console.log("DICTIONARY RESULT:", result);
 
@@ -62,8 +66,8 @@ router.post("/", (req, res) => {
       totalProjectedScore: 0,
       words: formedWords,
       invalidWords: result.invalidWords,
-      reason: `Some words are not valid in the ${result.dictionary} dictionary.`,
-      dictionary: result.dictionary,
+      reason: `Some words are not valid in the ${selectedDictionary} dictionary.`,
+      dictionary: selectedDictionary,
     });
   }
 
@@ -78,7 +82,7 @@ router.post("/", (req, res) => {
     words: formedWords,
     invalidWords: [],
     reason: null,
-    dictionary: result.dictionary,
+    dictionary: selectedDictionary,
   });
 });
 

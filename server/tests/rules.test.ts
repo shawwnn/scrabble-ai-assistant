@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { validateMove, type Board } from "../src/game/rules.js";
+import { validateMove, type Board } from "../game/rules.js";
 
 const tile = (letter: string, points: number) => ({
   letter,
