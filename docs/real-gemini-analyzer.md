@@ -66,4 +66,12 @@ The Express JSON body limit is 15 MB. The frontend currently rejects images larg
 
 ## Verification note
 
-Static diff validation passed. Full TypeScript/tests and a successful live Gemini OCR request still require dependencies and a working `GEMINI_API_KEY` with network access. Do not describe the OCR workflow as live-tested until an actual screenshot has successfully passed through `POST /api/analyze-image` and returned a move result.
+The OCR contract validation fixtures cover three empty-board cases and verify that no board tiles are detected, all seven rack letters are preserved in order, and the recognized rack is passed to the real CSW2024 move analyzer:
+
+- `EASAFAZ` → `FAZES` — passed.
+- `YGSVEZO` → expected `GYVES` — OCR validation passed, but the current CSW2024 analyzer ranks `ZYGOSE` higher.
+- `AITUJUD` → `JUD` — passed.
+
+The `GYVES` mismatch may be related to dictionary-version differences, but that explanation is not proven. Since two cases produce the expected move and all three OCR payloads validate an empty board and exact rack extraction, this is considered a positive validation signal rather than a confirmed three-case pass. The test intentionally does not hardcode or force the expected word in production.
+
+These are deterministic OCR contract fixtures, not live Gemini screenshot runs. A live OCR result still requires a working `GEMINI_API_KEY` and an actual screenshot passed through `POST /api/analyze-image`.

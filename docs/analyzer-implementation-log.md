@@ -34,3 +34,9 @@ Covered by existing tests: empty-board seven-tile bingo, seven-tile extension to
 
 - Phase 2 (Gemini recognition, upload endpoint, client `Analyze` page) has not started. It needs a server-side Gemini API key, which is not configured.
 - The Vite dev server preview was not re-checked in a browser. Vitest loads the same Vite config without error.
+
+## OCR validation fixtures
+
+Three empty-board OCR contract fixtures were added in `server/routes/ocr-validation.test.ts`. They verify zero occupied tiles, exact seven-letter rack extraction with order and duplicates preserved, and move analysis through the real CSW2024 dictionary.
+
+Two cases match the expected top move (`FAZES` and `JUD`). For `YGSVEZO`, the expected `GYVES` is a valid word, but the current CSW2024 analyzer ranks `ZYGOSE` higher. A dictionary-version explanation is possible but unproven. This is recorded as a positive two-of-three move-validation signal, not as a full three-case pass. The fixtures do not hardcode the production analyzer's result.
