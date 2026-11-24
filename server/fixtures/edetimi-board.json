@@ -4,10 +4,9 @@
     "rows": "1-15"
   },
   "last_active_word": {
-    "word": "ZIG",
-    "overlaps": {
-      "word": "INEDIBLE"
-    }
+    "word": "EEL",
+    "direction": "down",
+    "hooks": [{ "word": "JOBE" }, { "word": "TI" }]
   },
   "words": [
     {
