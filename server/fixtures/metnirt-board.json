@@ -1,0 +1,95 @@
+{
+  "board": {
+    "cols": "A-O",
+    "rows": "1-15"
+  },
+  "last_active_word": {
+    "word": "NAILER",
+    "direction": "across",
+    "points": 21,
+    "hook": {
+      "word": "SINUOSE",
+      "letter": "N",
+      "coord": "I8"
+    },
+    "tiles": [
+      { "coord": "I8", "letter": "N" },
+      { "coord": "J8", "letter": "A" },
+      { "coord": "K8", "letter": "I" },
+      { "coord": "L8", "letter": "L" },
+      { "coord": "M8", "letter": "E" },
+      { "coord": "N8", "letter": "R" }
+    ]
+  },
+  "words": [],
+  "occupied_tiles": {
+    "E2": "G",
+    "J2": "F",
+    "E3": "O",
+    "H3": "T",
+    "I3": "I",
+    "J3": "E",
+    "E4": "E",
+    "H4": "J",
+    "I4": "O",
+    "J4": "B",
+    "K4": "E",
+    "L4": "D",
+    "E5": "Y",
+    "D5": "M",
+    "H5": "O",
+    "I5": "F",
+    "K5": "L",
+    "L5": "I",
+    "D6": "U",
+    "H6": "I",
+    "I6": "T",
+    "J6": "S",
+    "D7": "R",
+    "H7": "N",
+    "J7": "I",
+    "A8": "A",
+    "B8": "D",
+    "C8": "A",
+    "D8": "P",
+    "E8": "T",
+    "F8": "O",
+    "G8": "R",
+    "H8": "S",
+    "I8": "N",
+    "J8": "A",
+    "K8": "I",
+    "L8": "L",
+    "M8": "E",
+    "N8": "R",
+    "D9": "H",
+    "J9": "U",
+    "D10": "I",
+    "J10": "O",
+    "D11": "E",
+    "J11": "S",
+    "D12": "S",
+    "J12": "E"
+  },
+  "rack": ["M", "E", "T", "N", "I", "R", "T"],
+  "user_suggested_best_word": {
+    "word": "INTERMAT",
+    "direction": "down",
+    "score": 61,
+    "tiles": [
+      { "coord": "A2", "letter": "I", "placed": true },
+      { "coord": "A3", "letter": "N", "placed": true },
+      { "coord": "A4", "letter": "T", "placed": true },
+      { "coord": "A5", "letter": "E", "placed": true },
+      { "coord": "A6", "letter": "R", "placed": true },
+      { "coord": "A7", "letter": "M", "placed": true },
+      { "coord": "A8", "letter": "A", "placed": false, "overlaps": "ADAPTORS" },
+      { "coord": "A9", "letter": "T", "placed": true }
+    ],
+    "hook": {
+      "word": "ADAPTORS",
+      "letter": "A",
+      "coord": "A8"
+    }
+  }
+}
