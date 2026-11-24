@@ -1,0 +1,58 @@
+{
+  "board": {
+    "cols": "A-O",
+    "rows": "1-15"
+  },
+  "last_active_word": {
+    "word": "ZIG",
+    "overlaps": {
+      "word": "INEDIBLE"
+    }
+  },
+  "occupied_tiles": {
+    "H5": "O",
+    "H6": "X",
+    "B6": "K",
+    "C6": "U",
+    "D6": "E",
+    "F6": "Z",
+    "B7": "I",
+    "C7": "N",
+    "D7": "E",
+    "E7": "D",
+    "F7": "I",
+    "G7": "B",
+    "H7": "L",
+    "I7": "E",
+    "H8": "I",
+    "H9": "P",
+    "D10": "R",
+    "E10": "E",
+    "F10": "H",
+    "G10": "A",
+    "H10": "S",
+    "I10": "H",
+    "I11": "E",
+    "J11": "N",
+    "K11": "V",
+    "L11": "Y"
+  },
+  "rack": ["N", "I", "D", "I", "O", "E", "E"],
+  "user_suggested_best_word": {
+    "word": "DIEB",
+    "direction": "down",
+    "score": 28,
+    "tiles": [
+      { "coord": "G4", "letter": "D", "placed": true },
+      { "coord": "G5", "letter": "I", "placed": true },
+      { "coord": "G6", "letter": "E", "placed": true },
+      {
+        "coord": "G7",
+        "letter": "B",
+        "placed": false,
+        "overlaps": "INEDIBLE"
+      }
+    ],
+    "hooks": ["ZX", "IO"]
+  }
+}
