@@ -30,15 +30,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/analyzer" element={<AnalyzerLayout />}>
-            <Route index element={<AnalyzerHome />} />
-            <Route path="upload" element={<AnalyzerUpload />} />
-            <Route path="processing" element={<AnalyzerProcessing />} />
-            <Route path="results" element={<AnalyzerResults />} />
-            <Route path="error" element={<AnalyzerError />} />
-          </Route>
           <Route element={<AppShell />}>
             <Route path="/" element={<Index />} />
+            <Route path="/analyzer" element={<AnalyzerLayout />}>
+              <Route index element={<AnalyzerHome />} />
+              <Route path="upload" element={<AnalyzerUpload />} />
+              <Route path="processing" element={<AnalyzerProcessing />} />
+              <Route path="results" element={<AnalyzerResults />} />
+              <Route path="error" element={<AnalyzerError />} />
+            </Route>
             <Route path="/new-game" element={<NewGame />} />
             <Route path="/games" element={<OngoingGames />} />
             <Route path="/games/:gameId" element={<Game />} />

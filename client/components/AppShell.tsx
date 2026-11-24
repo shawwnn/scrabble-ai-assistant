@@ -1,13 +1,23 @@
-import { Bell, Gamepad2, History, Home, Menu, ScanLine, Settings, Sparkles, X } from "lucide-react";
+import { Bell, Gamepad2, Home, Menu, ScanLine, Sparkles, X } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const nav = [{ to: "/", label: "Home", icon: Home }, { to: "/games", label: "Ongoing games", icon: Gamepad2 }, { to: "/history", label: "Match history", icon: History }, { to: "/analyzer", label: "Analyzer", icon: ScanLine }, { to: "/settings", label: "Settings", icon: Settings }];
+// The MVP surface is intentionally small. The archived game/history/settings
+// routes remain available for reuse, but are not part of the primary workflow.
+const nav = [
+  { to: "/", label: "Home", icon: Home },
+  { to: "/games/wordmaster", label: "Game board", icon: Gamepad2 },
+  { to: "/analyzer", label: "Analyzer", icon: ScanLine },
+];
 export default function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const title = location.pathname.startsWith("/games/") ? "Game board" : nav.find((item) => item.to === location.pathname)?.label ?? "Scrabble AI";
+  const title = location.pathname.startsWith("/games/")
+    ? "Game board"
+    : location.pathname.startsWith("/analyzer")
+      ? "Analyzer"
+      : nav.find((item) => item.to === location.pathname)?.label ?? "Scrabble AI";
   return <div className="min-h-screen bg-background text-foreground">
     <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-transform ${location.pathname.startsWith("/games/") ? "xl:translate-x-0" : "lg:translate-x-0"} ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
       <div className="flex h-20 items-center justify-between border-b border-sidebar-border px-7"><Link to="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}><span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20"><Sparkles className="h-4 w-4" /></span><span className="text-lg font-extrabold tracking-[.22em]">SCRABBLE</span></Link><button className="lg:hidden" onClick={() => setMobileOpen(false)}><X className="h-5 w-5" /></button></div>
