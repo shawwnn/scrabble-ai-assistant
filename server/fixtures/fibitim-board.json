@@ -1,0 +1,68 @@
+{
+  "board": {
+    "cols": "A-O",
+    "rows": "1-15"
+  },
+  "last_active_word": {
+    "word": "GOEY",
+    "direction": "down",
+    "tiles": [
+      { "coord": "E2", "letter": "G" },
+      { "coord": "E3", "letter": "O" },
+      { "coord": "E4", "letter": "E" },
+      { "coord": "E5", "letter": "Y" }
+    ]
+  },
+  "words": [],
+  "occupied_tiles": {
+    "E2": "G",
+    "E3": "O",
+    "E4": "E",
+    "E5": "Y",
+    "I3": "T",
+    "H4": "J",
+    "I4": "O",
+    "D5": "M",
+    "H5": "O",
+    "I5": "F",
+    "J5": "S",
+    "D6": "U",
+    "H6": "I",
+    "I6": "T",
+    "J6": "S",
+    "D7": "R",
+    "H7": "N",
+    "J7": "I",
+    "A8": "A",
+    "B8": "D",
+    "C8": "A",
+    "D8": "P",
+    "E8": "T",
+    "F8": "O",
+    "G8": "R",
+    "H8": "S",
+    "J8": "N",
+    "D9": "H",
+    "J9": "U",
+    "D10": "I",
+    "J10": "O",
+    "D11": "E",
+    "J11": "S",
+    "D12": "S",
+    "J12": "E"
+  },
+  "rack": ["F", "I", "B", "I", "T", "I", "M"],
+  "user_suggested_best_word": {
+    "word": "FIB",
+    "hooks": [
+      {
+        "letter": "T",
+        "coord": "I3"
+      },
+      {
+        "word": "JO",
+        "coords": ["H4", "I4"]
+      }
+    ]
+  }
+}

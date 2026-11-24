@@ -1,0 +1,77 @@
+{
+  "board": { "cols": "A-O", "rows": "1-15" },
+  "occupied_tiles": {
+    "H4": "T",
+    "G5": "J",
+    "H5": "O",
+    "G6": "O",
+    "H6": "F",
+    "G7": "I",
+    "H7": "T",
+    "G8": "N",
+    "G9": "S"
+  },
+  "last_active_word": {
+    "word": "TOFT",
+    "direction": "down",
+    "tiles": [
+      { "coord": "H4", "letter": "T" },
+      { "coord": "H5", "letter": "O" },
+      { "coord": "H6", "letter": "F" },
+      { "coord": "H7", "letter": "T" }
+    ]
+  },
+  "words": [
+    {
+      "word": "TOFT",
+      "direction": "down",
+      "is_last_active": true,
+      "tiles": [
+        { "coord": "H4", "letter": "T" },
+        { "coord": "H5", "letter": "O" },
+        { "coord": "H6", "letter": "F" },
+        { "coord": "H7", "letter": "T" }
+      ]
+    },
+    {
+      "word": "JOINS",
+      "direction": "down",
+      "tiles": [
+        { "coord": "G5", "letter": "J" },
+        { "coord": "G6", "letter": "O" },
+        { "coord": "G7", "letter": "I" },
+        { "coord": "G8", "letter": "N" },
+        { "coord": "G9", "letter": "S" }
+      ]
+    },
+    {
+      "word": "JO",
+      "direction": "across",
+      "tiles": [
+        { "coord": "G5", "letter": "J" },
+        { "coord": "H5", "letter": "O" }
+      ]
+    },
+    {
+      "word": "OF",
+      "direction": "across",
+      "tiles": [
+        { "coord": "G6", "letter": "O" },
+        { "coord": "H6", "letter": "F" }
+      ]
+    },
+    {
+      "word": "IT",
+      "direction": "across",
+      "tiles": [
+        { "coord": "G7", "letter": "I" },
+        { "coord": "H7", "letter": "T" }
+      ]
+    }
+  ],
+  "rack": ["D", "A", "T", "R", "A", "P", "O"],
+  "user_suggested_best_word": {
+    "word": "ADAPTORS",
+    "hook": { "letter": "S", "coord": "G9", "from_word": "JOINS" }
+  }
+}

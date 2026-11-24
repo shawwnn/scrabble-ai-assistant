@@ -1,0 +1,132 @@
+{
+  "board": { "cols": "A-O", "rows": "1-15" },
+  "occupied_tiles": {
+    "H4": "T",
+    "G5": "J",
+    "H5": "O",
+    "D6": "M",
+    "G6": "O",
+    "H6": "F",
+    "D7": "U",
+    "G7": "I",
+    "H7": "T",
+    "D8": "R",
+    "G8": "N",
+    "A9": "A",
+    "B9": "D",
+    "C9": "A",
+    "D9": "P",
+    "E9": "T",
+    "F9": "O",
+    "G9": "R",
+    "H9": "S",
+    "D10": "H",
+    "D11": "I",
+    "D12": "E",
+    "D13": "S"
+  },
+  "last_active_word": {
+    "word": "MURPHIES",
+    "direction": "down",
+    "points": 80,
+    "tiles": [
+      { "coord": "D6", "letter": "M" },
+      { "coord": "D7", "letter": "U" },
+      { "coord": "D8", "letter": "R" },
+      { "coord": "D9", "letter": "P" },
+      { "coord": "D10", "letter": "H" },
+      { "coord": "D11", "letter": "I" },
+      { "coord": "D12", "letter": "E" },
+      { "coord": "D13", "letter": "S" }
+    ]
+  },
+  "words": [
+    {
+      "word": "TOFT",
+      "direction": "down",
+      "tiles": [
+        { "coord": "H4", "letter": "T" },
+        { "coord": "H5", "letter": "O" },
+        { "coord": "H6", "letter": "F" },
+        { "coord": "H7", "letter": "T" }
+      ]
+    },
+    {
+      "word": "JOINS",
+      "direction": "down",
+      "tiles": [
+        { "coord": "G5", "letter": "J" },
+        { "coord": "G6", "letter": "O" },
+        { "coord": "G7", "letter": "I" },
+        { "coord": "G8", "letter": "N" },
+        { "coord": "G9", "letter": "S" }
+      ]
+    },
+    {
+      "word": "JO",
+      "direction": "across",
+      "tiles": [
+        { "coord": "G5", "letter": "J" },
+        { "coord": "H5", "letter": "O" }
+      ]
+    },
+    {
+      "word": "OF",
+      "direction": "across",
+      "tiles": [
+        { "coord": "G6", "letter": "O" },
+        { "coord": "H6", "letter": "F" }
+      ]
+    },
+    {
+      "word": "IT",
+      "direction": "across",
+      "tiles": [
+        { "coord": "G7", "letter": "I" },
+        { "coord": "H7", "letter": "T" }
+      ]
+    },
+    {
+      "word": "ADAPTORS",
+      "direction": "across",
+      "tiles": [
+        { "coord": "A9", "letter": "A" },
+        { "coord": "B9", "letter": "D" },
+        { "coord": "C9", "letter": "A" },
+        { "coord": "D9", "letter": "P" },
+        { "coord": "E9", "letter": "T" },
+        { "coord": "F9", "letter": "O" },
+        { "coord": "G9", "letter": "R" },
+        { "coord": "H9", "letter": "S" }
+      ]
+    },
+    {
+      "word": "MURPHIES",
+      "direction": "down",
+      "is_last_active": true,
+      "tiles": [
+        { "coord": "D6", "letter": "M" },
+        { "coord": "D7", "letter": "U" },
+        { "coord": "D8", "letter": "R" },
+        { "coord": "D9", "letter": "P" },
+        { "coord": "D10", "letter": "H" },
+        { "coord": "D11", "letter": "I" },
+        { "coord": "D12", "letter": "E" },
+        { "coord": "D13", "letter": "S" }
+      ]
+    }
+  ],
+  "rack": ["E", "S", "O", "U", "N", "I", "?"],
+  "user_suggested_best_word": {
+    "word": "SINUOSE",
+    "hook": {
+      "target_word": "IT",
+      "forms_word": "ITS",
+      "hook_letter": "S",
+      "existing_tiles": [
+        { "coord": "G7", "letter": "I" },
+        { "coord": "H7", "letter": "T" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "board": {
+    "cols": "A-O",
+    "rows": "1-15"
+  },
+  "last_active_word": {
+    "word": "EEL",
+    "direction": "down",
+    "hooks": [{ "word": "JOBE" }, { "word": "TI" }]
+  },
+  "words": [
+    {
+      "word": "GOEY",
+      "direction": "down",
+      "tiles": [
+        { "coord": "E2", "letter": "G" },
+        { "coord": "E3", "letter": "O" },
+        { "coord": "E4", "letter": "E" },
+        { "coord": "E5", "letter": "Y" }
+      ]
+    },
+    {
+      "word": "TIE",
+      "direction": "across",
+      "tiles": [
+        { "coord": "H3", "letter": "T" },
+        { "coord": "I3", "letter": "I" },
+        { "coord": "J3", "letter": "E" }
+      ]
+    },
+    {
+      "word": "JOBED",
+      "direction": "across",
+      "tiles": [
+        { "coord": "H4", "letter": "J" },
+        { "coord": "I4", "letter": "O" },
+        { "coord": "J4", "letter": "B" },
+        { "coord": "K4", "letter": "E" },
+        { "coord": "L4", "letter": "D" }
+      ]
+    },
+    {
+      "word": "OF",
+      "direction": "across",
+      "tiles": [
+        { "coord": "H5", "letter": "O" },
+        { "coord": "I5", "letter": "F" }
+      ]
+    },
+    {
+      "word": "ADAPTORS",
+      "direction": "across",
+      "tiles": [
+        { "coord": "A8", "letter": "A" },
+        { "coord": "B8", "letter": "D" },
+        { "coord": "C8", "letter": "A" },
+        { "coord": "D8", "letter": "P" },
+        { "coord": "E8", "letter": "T" },
+        { "coord": "F8", "letter": "O" },
+        { "coord": "G8", "letter": "R" },
+        { "coord": "H8", "letter": "S" }
+      ]
+    },
+    {
+      "word": "MURPHIES",
+      "direction": "down",
+      "tiles": [
+        { "coord": "D5", "letter": "M" },
+        { "coord": "D6", "letter": "U" },
+        { "coord": "D7", "letter": "R" },
+        { "coord": "D8", "letter": "P" },
+        { "coord": "D9", "letter": "H" },
+        { "coord": "D10", "letter": "I" },
+        { "coord": "D11", "letter": "E" },
+        { "coord": "D12", "letter": "S" }
+      ]
+    }
+  ],
+  "occupied_tiles": {
+    "E2": "G",
+    "J2": "F",
+    "E3": "O",
+    "H3": "T",
+    "I3": "I",
+    "J3": "E",
+    "E4": "E",
+    "H4": "J",
+    "I4": "O",
+    "J4": "B",
+    "K4": "E",
+    "L4": "D",
+    "E5": "Y",
+    "D5": "M",
+    "H5": "O",
+    "I5": "F",
+    "K5": "L",
+    "L5": "I",
+    "D6": "U",
+    "H6": "I",
+    "I6": "T",
+    "J6": "S",
+    "D7": "R",
+    "H7": "N",
+    "J7": "I",
+    "A8": "A",
+    "B8": "D",
+    "C8": "A",
+    "D8": "P",
+    "E8": "T",
+    "F8": "O",
+    "G8": "R",
+    "H8": "S",
+    "D9": "H",
+    "J9": "U",
+    "D10": "I",
+    "J10": "O",
+    "D11": "E",
+    "J11": "S",
+    "D12": "S",
+    "J12": "E"
+  },
+  "rack": ["E", "D", "E", "T", "I", "M", "I"],
+  "user_suggested_best_word": {
+    "word": "DIE",
+    "score": 40,
+    "hooks": [
+      {
+        "target_word": "JOBE",
+        "target_segment": "JOBE"
+      },
+      {
+        "letter": "L",
+        "coord": "K5"
+      }
+    ]
+  }
+}

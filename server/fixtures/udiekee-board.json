@@ -1,0 +1,109 @@
+{
+  "board": { "cols": "A-O", "rows": "1-15" },
+  "occupied_tiles": {
+    "H5": "O",
+    "H6": "X",
+    "B7": "I",
+    "C7": "N",
+    "D7": "E",
+    "E7": "D",
+    "F7": "I",
+    "G7": "B",
+    "H7": "L",
+    "I7": "E",
+    "H8": "I",
+    "H9": "P",
+    "D10": "R",
+    "E10": "E",
+    "F10": "H",
+    "G10": "A",
+    "H10": "S",
+    "I10": "H",
+    "I11": "E",
+    "J11": "N",
+    "K11": "V",
+    "L11": "Y"
+  },
+  "last_active_word": {
+    "word": "ENVY",
+    "direction": "across",
+    "points": 25,
+    "tiles": [
+      { "coord": "I11", "letter": "E" },
+      { "coord": "J11", "letter": "N" },
+      { "coord": "K11", "letter": "V" },
+      { "coord": "L11", "letter": "Y" }
+    ]
+  },
+  "words": [
+    {
+      "word": "OXLIP",
+      "direction": "down",
+      "tiles": [
+        { "coord": "H5", "letter": "O" },
+        { "coord": "H6", "letter": "X" },
+        { "coord": "H7", "letter": "L" },
+        { "coord": "H8", "letter": "I" },
+        { "coord": "H9", "letter": "P" }
+      ]
+    },
+    {
+      "word": "INEDIBLE",
+      "direction": "across",
+      "tiles": [
+        { "coord": "B7", "letter": "I" },
+        { "coord": "C7", "letter": "N" },
+        { "coord": "D7", "letter": "E" },
+        { "coord": "E7", "letter": "D" },
+        { "coord": "F7", "letter": "I" },
+        { "coord": "G7", "letter": "B" },
+        { "coord": "H7", "letter": "L" },
+        { "coord": "I7", "letter": "E" }
+      ]
+    },
+    {
+      "word": "REHASH",
+      "direction": "across",
+      "tiles": [
+        { "coord": "D10", "letter": "R" },
+        { "coord": "E10", "letter": "E" },
+        { "coord": "F10", "letter": "H" },
+        { "coord": "G10", "letter": "A" },
+        { "coord": "H10", "letter": "S" },
+        { "coord": "I10", "letter": "H" }
+      ]
+    },
+    {
+      "word": "HE",
+      "direction": "down",
+      "tiles": [
+        { "coord": "I10", "letter": "H" },
+        { "coord": "I11", "letter": "E" }
+      ]
+    },
+    {
+      "word": "ENVY",
+      "direction": "across",
+      "is_last_active": true,
+      "tiles": [
+        { "coord": "I11", "letter": "E" },
+        { "coord": "J11", "letter": "N" },
+        { "coord": "K11", "letter": "V" },
+        { "coord": "L11", "letter": "Y" }
+      ]
+    }
+  ],
+  "rack": ["U", "D", "I", "E", "K", "E", "E"],
+  "user_suggested_best_word": {
+    "word": "KUE",
+    "hook": {
+      "target_word": "INEDIBLE",
+      "target_segment": "INE",
+      "existing_tiles": [
+        { "coord": "B7", "letter": "I" },
+        { "coord": "C7", "letter": "N" },
+        { "coord": "D7", "letter": "E" }
+      ]
+    }
+  }
+}

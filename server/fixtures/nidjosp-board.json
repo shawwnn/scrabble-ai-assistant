@@ -1,0 +1,11 @@
+{
+  "board": { "cols": "A-O", "rows": "1-15" },
+  "occupied_tiles": {},
+  "last_active_word": null,
+  "words": [],
+  "rack": ["N", "I", "D", "J", "O", "S", "P"],
+  "user_suggested_best_word": {
+    "word": "JOINS",
+    "note": "Opening move covering center star H8; J placed on Double Letter (DL) tile"
+  }
+}

@@ -26,6 +26,10 @@ export type ScrabbleBoardSeed = {
   words: SeedWord[];
   occupied_tiles: Record<string, string>;
   rack: string[];
+  top_suggested_by_user?: {
+    length: number;
+    words: string[];
+  };
 };
 
 /** OCR/board-analysis fixture for the uploaded INEDIBLE game position. */
