@@ -7,7 +7,7 @@ This tracks implementation for the canonical plan in
 
 - [x] Phase 1 — Contract: define and validate `{ board, rack }` JSON.
 - [~] Phase 2 — Browser extraction: prototype added; integration and accuracy check remain.
-- [ ] Phase 3 — App integration: upload → extract → validate → analyze.
+- [x] Phase 3 — App integration: upload → extract → validate → analyze.
 - [ ] Phase 4 — Accuracy gate: test real images and release only if no manual correction is needed.
 
 ## Rules
@@ -26,3 +26,4 @@ Record the commit, test result, and any blocker after each phase.
 
 - Phase 1 — commit `178a4a8`; typecheck and 3 contract tests pass.
 - Phase 2 prototype — browser-only Tesseract adapter added; typecheck and production build pass.
+- Phase 3 — local extraction wired to the analyzer; typecheck and production build pass.

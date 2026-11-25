@@ -70,7 +70,7 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
 
     const rack = (await worker.recognize(cropCanvas(source, 0, source.height * 0.82, source.width, source.height * 0.18))).data.text
       .toUpperCase().match(/[A-Z]/g)?.slice(0, 7) ?? [];
-    return boardExtractionSchema.parse({ board, rack });
+    return boardExtractionSchema.parse({ board, rack }) as BoardExtraction;
   } finally {
     await worker.terminate();
   }

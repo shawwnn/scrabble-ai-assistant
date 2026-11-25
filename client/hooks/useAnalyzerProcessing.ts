@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ImageAnalyzeError, requestImageAnalysis } from "@/lib/image-analyze-api";
+import { requestAnalysis } from "@/lib/analyze-api";
+import { extractBoardFromImage } from "@/lib/browser-board-extractor";
 import { getSelectedScreenshot, setAnalysisError, setAnalysisResult } from "@/lib/analyzer-upload-store";
 import { PROCESSING_STAGES, STAGE_DURATION_MS } from "@/lib/analyzer-processing";
 
@@ -17,9 +18,10 @@ export function useAnalyzerProcessing() {
     const stageTimer = window.setInterval(() => {
       setActiveIndex((current) => Math.min(current + 1, PROCESSING_STAGES.length - 1));
     }, STAGE_DURATION_MS);
-    requestImageAnalysis(file)
+    extractBoardFromImage(file)
+      .then((extracted) => requestAnalysis({ board: extracted.board, rack: extracted.rack }).then((result) => ({ ...result, extracted })))
       .then((result) => { window.clearInterval(stageTimer); setActiveIndex(5); setAnalysisResult(result); navigate("/analyzer/results", { replace: true }); })
-      .catch((error: unknown) => { window.clearInterval(stageTimer); setAnalysisError(error instanceof Error ? error.message : "Image analysis failed.", error instanceof ImageAnalyzeError ? error.code : "OPENAI_API_ERROR"); navigate("/analyzer/error", { replace: true }); });
+      .catch((error: unknown) => { window.clearInterval(stageTimer); setAnalysisError(error instanceof Error ? error.message : "Image extraction failed.", "OCR_EXTRACTION_FAILED"); navigate("/analyzer/error", { replace: true }); });
     return () => window.clearInterval(stageTimer);
   }, [navigate]);
 

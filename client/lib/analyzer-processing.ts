@@ -8,16 +8,16 @@ export type StageStatus = "completed" | "active" | "pending";
 export const PROCESSING_STAGES: ProcessingStage[] = [
   { label: "Image Upload", description: "Receiving the uploaded screenshot." },
   {
-    label: "Gemini Recognition",
-    description: "Gemini analyzes the screenshot and recognizes the Scrabble board.",
+    label: "Local Recognition",
+    description: "The browser recognizes the Scrabble board locally.",
   },
   {
     label: "Coordinate Extraction",
     description: "Extracting letters and their exact row and column positions, including the rack if available.",
   },
   {
-    label: "Backend Transfer",
-    description: "Sending structured board and rack data to the backend.",
+    label: "Board Data Transfer",
+    description: "Sending only structured board and rack data to the backend.",
   },
   {
     label: "Move Analysis",

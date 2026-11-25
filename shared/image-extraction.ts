@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { BoardTileInput } from "./api";
 
 export const boardTileSchema = z.object({
   row: z.number().int().min(0).max(14),
@@ -21,4 +22,4 @@ export const boardExtractionSchema = z.object({
   }
 });
 
-export type BoardExtraction = z.infer<typeof boardExtractionSchema>;
+export type BoardExtraction = { board: BoardTileInput[]; rack: string[] };
