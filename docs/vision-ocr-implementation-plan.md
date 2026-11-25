@@ -6,9 +6,9 @@ This tracks implementation for the canonical plan in
 ## Phases
 
 - [x] Phase 1 — Cell isolation: board grid, premium filtering, rack tile splitting.
-- [!] Phase 2 — OpenCV isolation: supplied image still fails end-to-end extraction.
-- [ ] Phase 3 — App integration: upload → extract → validate → analyze.
-- [!] Phase 4 — Accuracy gate: failed on the supplied image; no release yet.
+- [~] Phase 2 — OpenCV isolation: supplied empty-board screenshot passes; occupied boards remain unverified.
+- [~] Phase 3 — App integration: upload → extract → validate → analyze works for the supplied screenshot; broader verification remains.
+- [ ] Phase 4 — Accuracy gate: occupied boards, blank images, and mobile remain unverified; no release yet.
 
 ## Rules
 
@@ -34,3 +34,5 @@ Record the commit, test result, and any blocker after each phase.
 - Decision — try Option B: OpenCV.js plus Tesseract.js; Option A failed accuracy.
 - OpenCV test — browser build passes, but the supplied image still ends at “Board cannot be analyzed”; OpenCV bundle is about 15.5 MB uncompressed.
 - Retest — the supplied empty-board screenshot now returns `board: []` and rack `AYERSEN` exactly. Occupied boards, other images, and mobile remain unverified.
+- Occupied-board test — the first supplied screenshot incorrectly returned an empty board and rack `HCCRARU` (expected `HOORARU`); the second failed to read a rack tile. Neither passes the accuracy gate. Incorrect extraction can reach the analyzer, so its suggestions must not be relied upon.
+- The three supplied screenshots are saved under `tests/fixtures/vision/`. After tile-color filtering changes, the empty-board image still passes; occupied-1 fails on an unreadable board tile. Exact occupied-board annotations and automated image tests remain outstanding.

@@ -37,7 +37,7 @@ function looksLikeTile(canvas: HTMLCanvasElement): boolean {
   for (const patch of pixels) {
     for (let index = 0; index < patch.length; index += 4) {
       const [red, green, blue] = patch.slice(index, index + 3);
-      if (red > 235 && green > 215 && blue > 175 && red > green + 4 && green > blue + 20) warm += 1;
+      if (red > 220 && green > 185 && blue > 105 && red - green < 55 && green > blue + 20) warm += 1;
     }
   }
   return warm > pixels.reduce((total, patch) => total + patch.length, 0) / 4 * 0.7;
