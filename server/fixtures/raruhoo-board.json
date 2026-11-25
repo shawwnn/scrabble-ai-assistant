@@ -1,0 +1,63 @@
+{
+  "board": {
+    "cols": "A-O",
+    "rows": "1-15"
+  },
+  "last_active_word": {
+    "word": "DOZ",
+    "direction": "across",
+    "points": 42,
+    "tiles": [
+      { "coord": "A8", "letter": "D" },
+      { "coord": "B8", "letter": "O" },
+      { "coord": "C8", "letter": "Z" }
+    ]
+  },
+  "words": [],
+  "occupied_tiles": {
+    "F2": "R",
+    "F3": "A",
+    "F4": "D",
+    "D4": "T",
+    "H4": "V",
+    "J4": "Q",
+    "K4": "I",
+    "L4": "S",
+    "D5": "A",
+    "E5": "N",
+    "F5": "I",
+    "G5": "M",
+    "H5": "A",
+    "I5": "T",
+    "J5": "I",
+    "D6": "S",
+    "F6": "X",
+    "H6": "R",
+    "I6": "A",
+    "J6": "N",
+    "K6": "G",
+    "L6": "E",
+    "D7": "T",
+    "H7": "V",
+    "A8": "D",
+    "B8": "O",
+    "C8": "Z",
+    "D8": "E",
+    "H8": "E",
+    "D9": "F",
+    "D10": "U",
+    "D11": "L",
+    "E11": "I",
+    "F11": "F",
+    "G11": "T",
+    "H11": "A",
+    "I11": "B",
+    "J11": "L",
+    "K11": "E"
+  },
+  "rack": ["R", "A", "R", "U", "H", "O", "O"],
+  "user_suggested_best_word": {
+    "status": "pending",
+    "note": "User best word has not been provided yet."
+  }
+}
