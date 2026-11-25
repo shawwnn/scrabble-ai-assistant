@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
+    "@techstark/opencv-js": "5.0.0-release.1",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "tesseract.js": "^7.0.0",

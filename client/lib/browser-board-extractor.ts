@@ -2,6 +2,7 @@ import { createWorker, PSM } from "tesseract.js";
 import type { BoardExtraction } from "@shared/image-extraction";
 import { boardExtractionSchema } from "@shared/image-extraction";
 import { BOARD_DIMENSION, RACK_DIMENSION, getBoardCell, getBoardLayout, getRackTile } from "@/lib/browser-board-layout";
+import { straightenBoard } from "@/lib/browser-opencv";
 
 const MAX_PROCESSING_MS = 45_000;
 
@@ -56,7 +57,8 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
   source.height = image.naturalHeight;
   source.getContext("2d")!.drawImage(image, 0, 0);
 
-  const layout = getBoardLayout(source.width, source.height);
+  const boardCanvas = await straightenBoard(source);
+  const layout = getBoardLayout(boardCanvas.width, boardCanvas.height);
   const worker = await createWorker("eng");
   const board: BoardExtraction["board"] = [];
 
@@ -70,7 +72,7 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
       for (let col = 0; col < BOARD_DIMENSION; col += 1) {
         if (Date.now() > deadline) throw new Error("Image processing timed out.");
         const region = getBoardCell(layout, row, col);
-        const cell = cropCanvas(source, region.x, region.y, region.width, region.height);
+        const cell = cropCanvas(boardCanvas, region.x, region.y, region.width, region.height);
         if (!looksLikeTile(cell)) continue;
         const letter = await readSingleLetter(worker, cell);
         if (letter) board.push({ row, col, letter });
