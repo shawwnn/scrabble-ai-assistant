@@ -1,4 +1,4 @@
-import { createWorker } from "tesseract.js";
+import { createWorker, PSM } from "tesseract.js";
 import type { BoardExtraction } from "@shared/image-extraction";
 import { boardExtractionSchema } from "@shared/image-extraction";
 import { BOARD_DIMENSION, RACK_DIMENSION, getBoardCell, getBoardLayout, getRackTile } from "@/lib/browser-board-layout";
@@ -36,7 +36,7 @@ function looksLikeTile(canvas: HTMLCanvasElement): boolean {
   for (const patch of pixels) {
     for (let index = 0; index < patch.length; index += 4) {
       const [red, green, blue] = patch.slice(index, index + 3);
-      if (red > 220 && green > 190 && blue > 140 && red > green + 4 && green > blue + 20) warm += 1;
+      if (red > 235 && green > 215 && blue > 175 && red > green + 4 && green > blue + 20) warm += 1;
     }
   }
   return warm > pixels.reduce((total, patch) => total + patch.length, 0) / 24;
@@ -61,6 +61,10 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
   const board: BoardExtraction["board"] = [];
 
   try {
+    await worker.setParameters({
+      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      tessedit_pageseg_mode: PSM.SINGLE_CHAR,
+    });
     const deadline = Date.now() + MAX_PROCESSING_MS;
     for (let row = 0; row < BOARD_DIMENSION; row += 1) {
       for (let col = 0; col < BOARD_DIMENSION; col += 1) {
