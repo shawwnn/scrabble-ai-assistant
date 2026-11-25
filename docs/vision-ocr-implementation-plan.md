@@ -6,7 +6,7 @@ This tracks implementation for the canonical plan in
 ## Phases
 
 - [x] Phase 1 — Cell isolation: board grid, premium filtering, rack tile splitting.
-- [!] Phase 2 — OCR extraction: isolated OCR still fails the supplied image.
+- [~] Phase 2 — OpenCV isolation: detect/straighten board and isolate letter tiles.
 - [ ] Phase 3 — App integration: upload → extract → validate → analyze.
 - [!] Phase 4 — Accuracy gate: failed on the supplied image; no release yet.
 
@@ -28,3 +28,4 @@ Record the commit, test result, and any blocker after each phase.
 - Earlier prototype — commits `0f84260` and `18c9620`; supplied image failed because premium labels were read as board letters and rack letters were missed.
 - Revised Phase 1 — deterministic 15×15 board cells and 7 rack regions; typecheck and 5 focused tests pass.
 - Phase 2 retest — single-letter OCR still returned false board letters and only 6 rack letters.
+- Decision — try Option B: OpenCV.js plus Tesseract.js; Option A failed accuracy.

@@ -6,10 +6,10 @@
 
 ## Status
 
-The active plan is a free browser pipeline using Canvas preprocessing and
-Tesseract.js. The first prototype failed because it OCR'd premium labels and
-misread rack tiles. The revised plan fixes cell selection before adding more
-OCR complexity.
+The active plan is a free browser pipeline using OpenCV.js for board detection
+and perspective correction, then Tesseract.js for letter recognition. Option A
+(Canvas plus Tesseract.js on the known screenshot layout) was tested and failed
+the accuracy gate.
 
 ## Product decisions
 
@@ -18,6 +18,7 @@ OCR complexity.
 - Support one JPG, PNG, or WEBP image at a time.
 - Work on laptop, desktop, and mobile browsers.
 - Be accurate enough to use without manual correction.
+- Version one targets screenshots and ordinary phone photos where practical.
 - Free Vercel or Render hosting is a future deployment target.
 - OpenAI is a possible future upgrade, not part of the first version.
 
@@ -38,11 +39,12 @@ those pieces first would delay the user-facing feature.
 The immediate problem is therefore: a user has a board image, but the analyzer
 needs structured board coordinates and rack letters.
 
-## Proposed solution: free browser extraction
+## Proposed solution: free OpenCV plus OCR extraction
 
-Accept a JPG, PNG, or WEBP image in the browser, use Canvas to isolate the
-board and rack tiles, run Tesseract.js only on likely letter tiles, and produce
-strict JSON matching the application contract:
+Accept a JPG, PNG, or WEBP image in the browser, use OpenCV.js to find and
+straighten the board, divide it into 15×15 cells, isolate the rack, run
+Tesseract.js only on letter regions, and produce strict JSON matching the
+application contract:
 
 ```json
 {
@@ -149,10 +151,10 @@ Structured output should be validated against the application's board and rack r
 
 The work should be delivered in gated phases:
 
-1. **Cell isolation** — use Canvas to locate the square board, divide it into
-   15×15 cells, separate premium/empty cells from letter tiles, and split the
-   seven rack tiles.
-2. **OCR extraction** — run Tesseract.js only on isolated letter tiles and
+1. **OpenCV isolation** — find the board boundary, correct perspective, divide
+   it into 15×15 cells, separate premium/empty cells from letter tiles, and
+   split the seven rack tiles.
+2. **OCR extraction** — run Tesseract.js only on OpenCV-isolated letter tiles and
    return validated zero-based JSON.
 3. **Upload and response integration** — connect extraction to the existing
    processing flow and retain move analysis.
@@ -162,8 +164,8 @@ The work should be delivered in gated phases:
 5. **Accuracy gate** — accept results only when the extractor meets the agreed
    accuracy target on representative images. Do not add manual correction to
    compensate for poor extraction.
-6. **Optional preprocessing** — add OpenCV.js only if phone-photo tests need
-   perspective correction; do not add it by default.
+6. **Optional fallback** — consider a hosted provider only if free local
+   extraction cannot meet accuracy requirements.
 
 Each phase should leave the application buildable and should not broaden the
 scope into continuous camera scanning or automatic gameplay.
@@ -230,12 +232,11 @@ It remains an optional future provider behind the same `{ board, rack }`
 contract. The previous implementation reference is preserved in
 `docs/openai-vision-analyzer.md`.
 
-### Server-hosted OCR
+### Option A: screenshot-only extraction
 
-Running OpenCV, PaddleOCR, or a larger local model on Render/Vercel was also
-considered. It avoids provider API billing but adds deployment size, runtime,
-CPU, memory, and implementation complexity. It is deferred unless the browser
-extraction spike fails the quality criteria.
+Canvas plus Tesseract.js on the known screenshot layout was tested first. It
+was lightweight but failed by reading premium labels as letters and missing
+rack letters. It is retained only as a baseline, not the active plan.
 
 ## Evaluation plan
 
