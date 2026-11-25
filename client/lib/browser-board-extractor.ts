@@ -1,8 +1,8 @@
 import { createWorker } from "tesseract.js";
 import type { BoardExtraction } from "@shared/image-extraction";
 import { boardExtractionSchema } from "@shared/image-extraction";
+import { BOARD_DIMENSION, RACK_DIMENSION, getBoardCell, getBoardLayout, getRackTile } from "@/lib/browser-board-layout";
 
-const BOARD_SIZE = 15;
 const MAX_PROCESSING_MS = 45_000;
 
 function loadImage(file: File): Promise<HTMLImageElement> {
@@ -56,19 +56,17 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
   source.height = image.naturalHeight;
   source.getContext("2d")!.drawImage(image, 0, 0);
 
-  const boardSize = Math.min(source.width * 0.94, source.height * 0.8);
-  const boardX = (source.width - boardSize) / 2;
-  const boardY = source.height * 0.035;
-  const cellSize = boardSize / BOARD_SIZE;
+  const layout = getBoardLayout(source.width, source.height);
   const worker = await createWorker("eng");
   const board: BoardExtraction["board"] = [];
 
   try {
     const deadline = Date.now() + MAX_PROCESSING_MS;
-    for (let row = 0; row < BOARD_SIZE; row += 1) {
-      for (let col = 0; col < BOARD_SIZE; col += 1) {
+    for (let row = 0; row < BOARD_DIMENSION; row += 1) {
+      for (let col = 0; col < BOARD_DIMENSION; col += 1) {
         if (Date.now() > deadline) throw new Error("Image processing timed out.");
-        const cell = cropCanvas(source, boardX + col * cellSize + cellSize * 0.14, boardY + row * cellSize + cellSize * 0.14, cellSize * 0.72, cellSize * 0.72);
+        const region = getBoardCell(layout, row, col);
+        const cell = cropCanvas(source, region.x, region.y, region.width, region.height);
         if (!looksLikeTile(cell)) continue;
         const letter = await readSingleLetter(worker, cell);
         if (letter) board.push({ row, col, letter });
@@ -76,10 +74,9 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
     }
 
     const rack: string[] = [];
-    const rackY = source.height * 0.86;
-    const rackHeight = source.height * 0.12;
-    for (let index = 0; index < 7; index += 1) {
-      const tile = cropCanvas(source, source.width * (index / 7 + 0.02), rackY, source.width / 7 * 0.92, rackHeight);
+    for (let index = 0; index < RACK_DIMENSION; index += 1) {
+      const region = getRackTile(source.width, source.height, index);
+      const tile = cropCanvas(source, region.x, region.y, region.width, region.height);
       const letter = await readSingleLetter(worker, tile);
       if (letter) rack.push(letter);
     }
