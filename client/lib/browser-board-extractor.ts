@@ -87,8 +87,9 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
         const region = getBoardCell(layout, row, col);
         const cell = cropCanvas(boardCanvas, region.x, region.y, region.width, region.height);
         if (!looksLikeTile(cell)) continue;
-        const letter = await readSingleLetter(worker, cell);
-        if (!letter) throw new Error("A board tile could not be read. Try a clearer image.");
+        const letterRegion = cropCanvas(cell, cell.width * 0.12, cell.height * 0.08, cell.width * 0.7, cell.height * 0.72);
+        const letter = await readSingleLetter(worker, letterRegion) || await readSingleLetter(worker, cell);
+        if (!letter) throw new Error(`Board tile at row ${row + 1}, column ${col + 1} could not be read. Try a clearer image.`);
         board.push({ row, col, letter });
       }
     }
