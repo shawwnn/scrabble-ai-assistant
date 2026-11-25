@@ -6,6 +6,7 @@ import { DICTIONARY_NAMES } from "../../shared/api";
 import { analyzeBoard } from "../lib/analyze";
 import { DictionaryUnavailableError, loadDictionary } from "../lib/dictionary";
 import { RACK_SIZE } from "../lib/score";
+import { boardExtractionSchema } from "../../shared/image-extraction";
 
 const letter = z.string().regex(/^[A-Za-z]$/);
 
@@ -30,10 +31,7 @@ const imageAnalyzeRequest = z.object({
   dictionary: z.enum(DICTIONARY_NAMES).default("CSW2024"),
 });
 
-const ocrResponse = z.object({
-  board: z.array(z.object({ row: z.number().int().min(0).max(14), col: z.number().int().min(0).max(14), letter: letter.transform((value) => value.toUpperCase()), blank: z.boolean().optional() })),
-  rack: z.array(letter.transform((value) => value.toUpperCase())).max(RACK_SIZE),
-});
+const ocrResponse = boardExtractionSchema;
 
 class ImageAnalyzeFailure extends Error {
   constructor(
