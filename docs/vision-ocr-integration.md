@@ -28,6 +28,14 @@ Allow a user to upload a JPG or other supported image, then convert it into
 JSON containing occupied board coordinates and letters plus the visible rack.
 The extracted data feeds the existing analyzer.
 
+An empty board is a valid game state, including at the start of a game. When no
+board tiles are present, return `"board": []` and extract the visible rack as
+usual. Premium squares such as TW, DW, TL, and DL are not occupied tiles.
+For the known screenshot style, an unchanged default grid (including its
+visible premium squares) with no placed tiles represents an empty board. Visible
+premium squares alone are not proof that other squares are unoccupied; inspect
+all 225 cells. Reject an image when the board cannot be reliably inspected.
+
 ## Problem statement
 
 Reliable local OCR and computer-vision extraction is currently too costly and

@@ -16,6 +16,12 @@ function place(word: string, row: number, col: number, horizontal: boolean): Boa
 }
 
 describe("bingo detection", () => {
+  it("uses a blank for a bingo and scores the blank as zero", () => {
+    const { recommendation } = analyzeBoard([], [..."PAINTE", "?"], createDictionary(["PAINTER"]));
+    expect(recommendation).toMatchObject({ word: "PAINTER", bingo: true, bingoBonus: 50 });
+    expect(recommendation.tiles.find((tile) => tile.blank)).toMatchObject({ letter: "R" });
+    expect(recommendation.score).toBe(72);
+  });
   it("finds a seven-tile bingo on an empty board and prefers the lower row on equal scores", () => {
     // Best placement: P on a double-letter square (6), other letters 1 each = 12, center double-word = 24, plus 50 = 74.
     // The same play is available horizontally from (7, 3) and vertically from (3, 7); the lower row wins the tie.

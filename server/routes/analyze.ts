@@ -19,7 +19,7 @@ const analyzeRequest = z.object({
       blank: z.boolean().optional(),
     }),
   ),
-  rack: z.array(letter).min(1).max(RACK_SIZE),
+  rack: z.array(z.string().regex(/^[A-Za-z?]$/)).min(1).max(RACK_SIZE),
   dictionary: z.enum(DICTIONARY_NAMES).default("CSW2024"),
 });
 

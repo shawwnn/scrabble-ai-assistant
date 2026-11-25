@@ -11,8 +11,11 @@ const STEPS: Record<Direction, [number, number]> = {
 };
 
 export function generateMoves(grid: Grid, dictionary: Dictionary, rack: string[]): Move[] {
-  const rackCounts = Array<number>(LETTERS.length).fill(0);
-  for (const letter of rack) rackCounts[LETTERS.indexOf(letter)] += 1;
+  const rackCounts = Array<number>(LETTERS.length + 1).fill(0);
+  for (const letter of rack) {
+    const index = letter === "?" ? LETTERS.length : LETTERS.indexOf(letter);
+    if (index >= 0) rackCounts[index] += 1;
+  }
   const boardHasTiles = grid.some((cells) => cells.some(Boolean));
   const moves: Move[] = [];
   for (const direction of ["horizontal", "vertical"] as const) {
@@ -64,17 +67,21 @@ function searchDirection(
     if (!inBounds(row, col)) return;
     const mask = crossMasks[row][col];
     for (let i = 0; i < LETTERS.length; i += 1) {
-      if (rackCounts[i] === 0 || (mask & (1 << i)) === 0) continue;
+      if ((mask & (1 << i)) === 0) continue;
       const letter = LETTERS[i];
       const child = node.children.get(letter);
       if (!child) continue;
-      rackCounts[i] -= 1;
-      grid[row][col] = { letter, blank: false };
-      placed.push({ row, col, letter });
-      extend(row + dr, col + dc, child, word + letter);
-      placed.pop();
-      grid[row][col] = null;
-      rackCounts[i] += 1;
+      for (const rackIndex of [i, LETTERS.length]) {
+        if (rackCounts[rackIndex] === 0) continue;
+        const blank = rackIndex === LETTERS.length;
+        rackCounts[rackIndex] -= 1;
+        grid[row][col] = { letter, blank };
+        placed.push(blank ? { row, col, letter, blank: true } : { row, col, letter });
+        extend(row + dr, col + dc, child, word + letter);
+        placed.pop();
+        grid[row][col] = null;
+        rackCounts[rackIndex] += 1;
+      }
     }
   };
 

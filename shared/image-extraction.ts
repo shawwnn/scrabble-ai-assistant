@@ -10,7 +10,7 @@ export const boardTileSchema = z.object({
 
 export const boardExtractionSchema = z.object({
   board: z.array(boardTileSchema),
-  rack: z.array(z.string().regex(/^[A-Za-z]$/).transform((value) => value.toUpperCase())).max(7),
+  rack: z.array(z.string().regex(/^[A-Za-z?]$/).transform((value) => value.toUpperCase())).max(7),
 }).superRefine((value, context) => {
   const positions = new Set<string>();
   for (const [index, tile] of value.board.entries()) {

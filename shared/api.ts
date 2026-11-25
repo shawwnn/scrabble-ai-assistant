@@ -34,6 +34,7 @@ export interface PlacedTile {
   row: number;
   col: number;
   letter: string;
+  blank?: boolean;
 }
 
 export interface Move {

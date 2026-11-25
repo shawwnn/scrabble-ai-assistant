@@ -17,6 +17,9 @@ This tracks implementation for the canonical plan in
 - One JPG, PNG, or WEBP image at a time.
 - No OpenAI API in version one.
 - No manual correction in version one.
+- An empty board is valid: return `board: []` and read the visible rack.
+- Premium-square labels are not occupied tiles.
+- A blank rack tile is represented by `?`; it scores zero and counts toward a seven-tile bingo. Visual blank detection remains unverified.
 
 ## Checkpoints
 
@@ -30,3 +33,4 @@ Record the commit, test result, and any blocker after each phase.
 - Phase 2 retest — single-letter OCR still returned false board letters and only 6 rack letters.
 - Decision — try Option B: OpenCV.js plus Tesseract.js; Option A failed accuracy.
 - OpenCV test — browser build passes, but the supplied image still ends at “Board cannot be analyzed”; OpenCV bundle is about 15.5 MB uncompressed.
+- Retest — the supplied empty-board screenshot now returns `board: []` and rack `AYERSEN` exactly. Occupied boards, other images, and mobile remain unverified.

@@ -13,10 +13,12 @@ type OpenCvModule = {
   arcLength(contour: any, closed: boolean): number;
   approxPolyDP(source: any, target: any, epsilon: number, closed: boolean): void;
   getPerspectiveTransform(source: any, target: any): any;
+  matFromArray(rows: number, cols: number, type: number, data: number[]): any;
   warpPerspective(source: any, target: any, transform: any, size: any): void;
   COLOR_RGBA2GRAY: number;
   RETR_LIST: number;
   CHAIN_APPROX_SIMPLE: number;
+  CV_32FC2: number;
 };
 
 let openCvPromise: Promise<OpenCvModule> | null = null;
@@ -32,7 +34,10 @@ async function getOpenCv(): Promise<OpenCvModule> {
 }
 
 function orderCorners(points: any[]): any[] {
-  return [...points].sort((a, b) => (a.x + a.y) - (b.x + b.y));
+  const sorted = [...points].sort((a, b) => a.y - b.y);
+  const top = sorted.slice(0, 2).sort((a, b) => a.x - b.x);
+  const bottom = sorted.slice(2).sort((a, b) => a.x - b.x);
+  return [top[0], top[1], bottom[1], bottom[0]];
 }
 
 export async function straightenBoard(source: HTMLCanvasElement): Promise<HTMLCanvasElement> {
@@ -44,7 +49,7 @@ export async function straightenBoard(source: HTMLCanvasElement): Promise<HTMLCa
   const hierarchy = new cv.Mat();
   try {
     cv.cvtColor(input, gray, cv.COLOR_RGBA2GRAY);
-    cv.Canny(gray, edges, 60, 180);
+    cv.Canny(gray, edges, 10, 40);
     cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
     let best: any = null;
     let bestArea = 0;
@@ -53,8 +58,9 @@ export async function straightenBoard(source: HTMLCanvasElement): Promise<HTMLCa
       const area = cv.contourArea(contour);
       const perimeter = cv.arcLength(contour, true);
       const polygon = new cv.Mat();
-      cv.approxPolyDP(contour, polygon, perimeter * 0.02, true);
+      cv.approxPolyDP(contour, polygon, perimeter * 0.04, true);
       if (polygon.rows === 4 && area > bestArea) {
+        best?.delete();
         best = polygon;
         bestArea = area;
       } else {
@@ -62,7 +68,10 @@ export async function straightenBoard(source: HTMLCanvasElement): Promise<HTMLCa
       }
       contour.delete();
     }
-    if (!best || bestArea < input.rows * input.cols * 0.25) return source;
+    if (!best || bestArea < input.rows * input.cols * 0.25) {
+      best?.delete();
+      throw new Error("Could not detect the full board. Use a clear image showing the entire board.");
+    }
     const points = orderCorners(Array.from({ length: 4 }, (_, index) => ({ x: best.intPtr(index, 0)[0], y: best.intPtr(index, 0)[1] })));
     const sourcePoints = cv.matFromArray(4, 1, cv.CV_32FC2 ?? 13, points.flatMap((point) => [point.x, point.y]));
     const targetPoints = cv.matFromArray(4, 1, cv.CV_32FC2 ?? 13, [0, 0, 1000, 0, 1000, 1000, 0, 1000]);

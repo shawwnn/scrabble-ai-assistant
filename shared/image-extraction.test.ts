@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { boardExtractionSchema } from "./image-extraction";
 
 describe("board extraction contract", () => {
+  it("accepts a blank rack tile", () => {
+    expect(boardExtractionSchema.parse({ board: [], rack: ["E", "?"] }).rack).toEqual(["E", "?"]);
+  });
   it("normalizes valid letters and coordinates", () => {
     expect(boardExtractionSchema.parse({
       board: [{ row: 7, col: 7, letter: "a" }],
