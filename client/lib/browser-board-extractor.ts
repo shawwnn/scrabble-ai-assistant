@@ -26,13 +26,20 @@ function cropCanvas(source: HTMLCanvasElement, x: number, y: number, width: numb
 function looksLikeTile(canvas: HTMLCanvasElement): boolean {
   const context = canvas.getContext("2d")!;
   const size = Math.min(canvas.width, canvas.height);
-  const pixels = context.getImageData(size * 0.3, size * 0.3, size * 0.4, size * 0.4).data;
+  const pixels = [
+    context.getImageData(size * 0.12, size * 0.12, size * 0.18, size * 0.18).data,
+    context.getImageData(size * 0.70, size * 0.12, size * 0.18, size * 0.18).data,
+    context.getImageData(size * 0.12, size * 0.70, size * 0.18, size * 0.18).data,
+    context.getImageData(size * 0.70, size * 0.70, size * 0.18, size * 0.18).data,
+  ];
   let warm = 0;
-  for (let index = 0; index < pixels.length; index += 4) {
-    const [red, green, blue] = pixels.slice(index, index + 3);
-    if (red > green + 12 && green > blue + 8) warm += 1;
+  for (const patch of pixels) {
+    for (let index = 0; index < patch.length; index += 4) {
+      const [red, green, blue] = patch.slice(index, index + 3);
+      if (red > 220 && green > 190 && blue > 140 && red > green + 4 && green > blue + 20) warm += 1;
+    }
   }
-  return warm > pixels.length / 16;
+  return warm > pixels.reduce((total, patch) => total + patch.length, 0) / 24;
 }
 
 function readSingleLetter(worker: Awaited<ReturnType<typeof createWorker>>, canvas: HTMLCanvasElement): Promise<string> {
@@ -68,8 +75,14 @@ export async function extractBoardFromImage(file: File): Promise<BoardExtraction
       }
     }
 
-    const rack = (await worker.recognize(cropCanvas(source, 0, source.height * 0.82, source.width, source.height * 0.18))).data.text
-      .toUpperCase().match(/[A-Z]/g)?.slice(0, 7) ?? [];
+    const rack: string[] = [];
+    const rackY = source.height * 0.86;
+    const rackHeight = source.height * 0.12;
+    for (let index = 0; index < 7; index += 1) {
+      const tile = cropCanvas(source, source.width * (index / 7 + 0.02), rackY, source.width / 7 * 0.92, rackHeight);
+      const letter = await readSingleLetter(worker, tile);
+      if (letter) rack.push(letter);
+    }
     return boardExtractionSchema.parse({ board, rack }) as BoardExtraction;
   } finally {
     await worker.terminate();
