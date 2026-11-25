@@ -28,6 +28,13 @@ export default function AnalyzerResults() {
       )}
 
       {data &&
+        data.extracted && (
+          <pre className="overflow-auto rounded-xl border border-border bg-muted/40 p-4 text-xs leading-5">
+            {JSON.stringify(data.extracted, null, 2)}
+          </pre>
+        )}
+
+      {data &&
         (data.suggestions.length > 0 ? (
           <SuggestionList moves={data.suggestions} />
         ) : (

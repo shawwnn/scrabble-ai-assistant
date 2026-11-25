@@ -13,13 +13,14 @@ const fixtures = [
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("Gemini OCR validation fixtures", () => {
+describe("OpenAI vision OCR validation fixtures", () => {
   it.each(fixtures)("recognizes $name and produces the expected move", async (fixture) => {
+    vi.stubEnv("OPENAI_API_KEY", "test-key");
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({
-      candidates: [{ content: { parts: [{ text: JSON.stringify({
+      output_text: JSON.stringify({
         board: [],
         rack: [...fixture.rack],
-      }) }] } }],
+      }),
     }), { status: 200, headers: { "content-type": "application/json" } }));
 
     const recognized = await recognizeBoard({ mimeType: "image/png", data: fixture.imageData });

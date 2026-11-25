@@ -16,6 +16,6 @@ export async function requestImageAnalysis(file: File): Promise<AnalyzeResponse>
     signal: AbortSignal.timeout(TOTAL_PROCESSING_TIMEOUT_MS),
   });
   const body = (await response.json()) as AnalyzeResponse | AnalyzeErrorResponse;
-  if (!response.ok) throw new ImageAnalyzeError("error" in body ? body.error : "Image analysis failed.", "code" in body && body.code ? body.code : "GEMINI_API_ERROR");
+  if (!response.ok) throw new ImageAnalyzeError("error" in body ? body.error : "Image analysis failed.", "code" in body && body.code ? body.code : "OPENAI_API_ERROR");
   return body as AnalyzeResponse;
 }

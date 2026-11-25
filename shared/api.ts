@@ -56,6 +56,7 @@ export interface AnalyzeResponse {
   dictionary: DictionaryName;
   recommendation: MoveRecommendation | null;
   suggestions: Move[];
+  extracted?: { board: BoardTileInput[]; rack: string[] };
 }
 
 export interface AnalyzeErrorResponse {
@@ -65,7 +66,7 @@ export interface AnalyzeErrorResponse {
 }
 
 export const IMAGE_ANALYZE_ERROR_CODES = [
-  "GEMINI_API_ERROR",
+  "OPENAI_API_ERROR",
   "IMAGE_NOT_RECOGNIZED",
   "OCR_EXTRACTION_FAILED",
 ] as const;

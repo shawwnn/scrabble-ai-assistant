@@ -19,7 +19,7 @@ export function useAnalyzerProcessing() {
     }, STAGE_DURATION_MS);
     requestImageAnalysis(file)
       .then((result) => { window.clearInterval(stageTimer); setActiveIndex(5); setAnalysisResult(result); navigate("/analyzer/results", { replace: true }); })
-      .catch((error: unknown) => { window.clearInterval(stageTimer); setAnalysisError(error instanceof Error ? error.message : "Image analysis failed.", error instanceof ImageAnalyzeError ? error.code : "GEMINI_API_ERROR"); navigate("/analyzer/error", { replace: true }); });
+      .catch((error: unknown) => { window.clearInterval(stageTimer); setAnalysisError(error instanceof Error ? error.message : "Image analysis failed.", error instanceof ImageAnalyzeError ? error.code : "OPENAI_API_ERROR"); navigate("/analyzer/error", { replace: true }); });
     return () => window.clearInterval(stageTimer);
   }, [navigate]);
 

@@ -2,7 +2,7 @@ import { AlertTriangle } from "lucide-react";
 import type { ImageAnalyzeErrorCode } from "@shared/api";
 
 const messages: Record<ImageAnalyzeErrorCode, { title: string; detail: string }> = {
-  GEMINI_API_ERROR: { title: "AI service unavailable", detail: "The image service could not be reached. Please try again shortly." },
+  OPENAI_API_ERROR: { title: "AI service unavailable", detail: "The image service could not be reached. Please try again shortly." },
   IMAGE_NOT_RECOGNIZED: { title: "Scrabble board not recognized", detail: "Use a clear image showing the full board and all seven rack tiles." },
   OCR_EXTRACTION_FAILED: { title: "Board details could not be extracted", detail: "The image was received, but the board or rack data was incomplete. Try again with a clearer image." },
 };

@@ -50,55 +50,55 @@ function logImageAnalyzeFailure(failure: ImageAnalyzeFailure): void {
 }
 
 export async function recognizeBoard(image: { mimeType: string; data: string }): Promise<{ board: BoardTileInput[]; rack: string[] }> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new ImageAnalyzeFailure("GEMINI_API_ERROR", 503, "Gemini API key is not configured");
-  const model = process.env.GEMINI_TEST_MODEL ?? "gemini-3.8-flash";
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new ImageAnalyzeFailure("OPENAI_API_ERROR", 503, "OpenAI API key is not configured");
+  const model = process.env.OPENAI_VISION_MODEL ?? "gpt-4.1-mini";
   let response: Response;
   try {
-    response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+    response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        contents: [{ parts: [
-          { text: "Read this Scrabble screenshot. Return only JSON with board (occupied tiles using zero-based row and col, letter, and optional blank) and rack (visible rack letters). If this is not a clear Scrabble board with a visible rack, return {\"board\":[],\"rack\":[]}. Do not guess unreadable tiles." },
-          { inline_data: { mime_type: image.mimeType, data: image.data } },
+        model,
+        input: [{ role: "user", content: [
+          { type: "input_text", text: "Read this Scrabble screenshot. Return only JSON with board (occupied tiles using zero-based row and col, letter, and optional blank) and rack (visible rack letters). If this is not a clear Scrabble board with a visible rack, return {\"board\":[],\"rack\":[]}. Do not guess unreadable tiles." },
+          { type: "input_image", image_url: `data:${image.mimeType};base64,${image.data}` },
         ] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: { type: "OBJECT", properties: {
-            board: { type: "ARRAY", items: { type: "OBJECT", properties: { row: { type: "INTEGER" }, col: { type: "INTEGER" }, letter: { type: "STRING" }, blank: { type: "BOOLEAN" } }, required: ["row", "col", "letter"] } },
-            rack: { type: "ARRAY", items: { type: "STRING" } },
-          }, required: ["board", "rack"] },
-        },
+        text: { format: { type: "json_schema", name: "scrabble_board", strict: true, schema: {
+          type: "object", properties: {
+            board: { type: "array", items: { type: "object", properties: { row: { type: "integer" }, col: { type: "integer" }, letter: { type: "string" }, blank: { type: "boolean" } }, required: ["row", "col", "letter"], additionalProperties: false } },
+            rack: { type: "array", items: { type: "string" } },
+          }, required: ["board", "rack"], additionalProperties: false,
+        } } },
       }),
       signal: AbortSignal.timeout(180_000),
     });
   } catch (error) {
-    throw new ImageAnalyzeFailure("GEMINI_API_ERROR", 502, error instanceof Error && error.name === "TimeoutError" ? "Gemini request timed out" : "Gemini request failed");
+    throw new ImageAnalyzeFailure("OPENAI_API_ERROR", 502, error instanceof Error && error.name === "TimeoutError" ? "OpenAI request timed out" : "OpenAI request failed");
   }
   if (!response.ok) {
     const status = response.status;
     const reason = status === 401 || status === 403
-      ? `Gemini rejected the API credentials (HTTP ${status})`
+          ? `OpenAI rejected the API credentials (HTTP ${status})`
       : status === 404
-        ? `Gemini model is unavailable (HTTP ${status})`
+        ? `OpenAI model is unavailable (HTTP ${status})`
         : status === 429
-          ? "Gemini quota or rate limit reached (HTTP 429)"
-          : `Gemini returned HTTP ${status}`;
-    throw new ImageAnalyzeFailure("GEMINI_API_ERROR", status === 429 ? 429 : 502, reason);
+          ? "OpenAI quota or rate limit reached (HTTP 429)"
+          : `OpenAI returned HTTP ${status}`;
+    throw new ImageAnalyzeFailure("OPENAI_API_ERROR", status === 429 ? 429 : 502, reason);
   }
-  let payload: { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+  let payload: { output_text?: string };
   try {
     payload = await response.json() as typeof payload;
   } catch {
-    throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "Gemini response was not valid JSON");
+    throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "OpenAI response was not valid JSON");
   }
-  const text = payload.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "Gemini response contained no OCR text");
+  const text = payload.output_text;
+  if (!text) throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "OpenAI response contained no OCR text");
   let value: unknown;
-  try { value = JSON.parse(text); } catch { throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "Gemini OCR text was not valid JSON"); }
+  try { value = JSON.parse(text); } catch { throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "OpenAI OCR text was not valid JSON"); }
   const parsed = ocrResponse.safeParse(value);
-  if (!parsed.success) throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "Gemini OCR data failed validation");
+  if (!parsed.success) throw new ImageAnalyzeFailure("OCR_EXTRACTION_FAILED", 502, "OpenAI OCR data failed validation");
   if (parsed.data.rack.length === 0) throw new ImageAnalyzeFailure("IMAGE_NOT_RECOGNIZED", 422, "No Scrabble rack was recognized");
   return parsed.data as { board: BoardTileInput[]; rack: string[] };
 }
@@ -154,12 +154,12 @@ export const handleImageAnalyze: RequestHandler = async (req, res) => {
       res.status(422).json({ error: "Recognized board cannot be analyzed", issues: result.issues });
       return;
     }
-    const body: AnalyzeResponse = { dictionary: dictionaryName, recommendation: result.recommendation, suggestions: result.suggestions };
+    const body: AnalyzeResponse = { dictionary: dictionaryName, recommendation: result.recommendation, suggestions: result.suggestions, extracted: { board, rack } };
     res.json(body);
   } catch (error) {
     const failure = error instanceof ImageAnalyzeFailure
       ? error
-      : new ImageAnalyzeFailure("GEMINI_API_ERROR", 502, "Unexpected image analysis failure");
+      : new ImageAnalyzeFailure("OPENAI_API_ERROR", 502, "Unexpected image analysis failure");
     logImageAnalyzeFailure(failure);
     const geminiMessage = failure.reason.includes("credentials")
       ? "The AI service credentials were rejected. Please contact the administrator."
@@ -171,7 +171,7 @@ export const handleImageAnalyze: RequestHandler = async (req, res) => {
             ? "The AI service did not respond in time. Please try again."
             : "The AI service is temporarily unavailable. Please try again later.";
     const messages = {
-      GEMINI_API_ERROR: geminiMessage,
+      OPENAI_API_ERROR: geminiMessage,
       IMAGE_NOT_RECOGNIZED: "We couldn't find a recognizable Scrabble board and rack in this image.",
       OCR_EXTRACTION_FAILED: "The image was received, but its board and rack data could not be extracted.",
     } satisfies Record<ImageAnalyzeErrorCode, string>;
