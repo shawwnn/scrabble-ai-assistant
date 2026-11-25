@@ -5,7 +5,7 @@ This tracks implementation for the canonical plan in
 
 ## Phases
 
-- [ ] Phase 1 — Contract: define and validate `{ board, rack }` JSON.
+- [x] Phase 1 — Contract: define and validate `{ board, rack }` JSON.
 - [ ] Phase 2 — Browser extraction: image to board/rack JSON on desktop and mobile browsers.
 - [ ] Phase 3 — App integration: upload → extract → validate → analyze.
 - [ ] Phase 4 — Accuracy gate: test real images and release only if no manual correction is needed.
@@ -21,3 +21,7 @@ This tracks implementation for the canonical plan in
 ## Checkpoints
 
 Record the commit, test result, and any blocker after each phase.
+
+## Completed checkpoints
+
+- Phase 1 — commit `178a4a8`; typecheck and 3 contract tests pass.
