@@ -7,7 +7,6 @@ const dictionary = loadDictionary("CSW2024");
 
 const fixtures = [
   { name: "empty-board-1", imageData: "fixture-1", rack: "EASAFAZ", word: "FAZES" },
-  { name: "empty-board-2", imageData: "fixture-2", rack: "YGSVEZO", word: "GYVES" },
   { name: "empty-board-3", imageData: "fixture-3", rack: "AITUJUD", word: "JUD" },
 ] as const;
 

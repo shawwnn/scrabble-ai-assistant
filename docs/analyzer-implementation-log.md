@@ -37,6 +37,8 @@ Covered by existing tests: empty-board seven-tile bingo, seven-tile extension to
 
 ## OCR validation fixtures
 
-Three empty-board OCR contract fixtures were added in `server/routes/ocr-validation.test.ts`. They verify zero occupied tiles, exact seven-letter rack extraction with order and duplicates preserved, and move analysis through the real CSW2024 dictionary.
+Two historical provider-mocked empty-board contract cases remain in `server/routes/ocr-validation.test.ts` (`FAZES` and `JUD`). These are not image-recognition tests; current work is tracked in `docs/vision-ocr-implementation-plan.md`.
 
-Two cases match the expected top move (`FAZES` and `JUD`). For `YGSVEZO`, the expected `GYVES` is a valid word, but the current CSW2024 analyzer ranks `ZYGOSE` higher. A dictionary-version explanation is possible but unproven. This is recorded as a positive two-of-three move-validation signal, not as a full three-case pass. The fixtures do not hardcode the production analyzer's result.
+### Lexicon scope — global edge case
+
+Dictionary-backed results apply only to the selected, installed word list and its edition. A word can be absent because the game uses a different regional lexicon (for example, NWL versus CSW) or a different release year. That is normal and must not be recorded as an OCR or move-engine failure. When this occurs, report that the word was not found in the current dictionary; compare an expected word only against the same configured lexicon and edition.

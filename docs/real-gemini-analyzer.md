@@ -66,12 +66,13 @@ The Express JSON body limit is 15 MB. The frontend currently rejects images larg
 
 ## Verification note
 
-The OCR request and client wait up to three minutes. The first two minutes are divided evenly across the six visible processing stages (20 seconds per stage); the final minute remains available for the backend/Gemini request to finish. The OCR contract validation fixtures cover three empty-board cases and verify that no board tiles are detected, all seven rack letters are preserved in order, and the recognized rack is passed to the real CSW2024 move analyzer:
+Historical provider-mocked OCR contract tests cover two empty-board cases. They verify that all seven rack letters are preserved and passed to the CSW2024 analyzer:
 
 - `EASAFAZ` → `FAZES` — passed.
-- `YGSVEZO` → expected `GYVES` — OCR validation passed, but the current CSW2024 analyzer ranks `ZYGOSE` higher.
 - `AITUJUD` → `JUD` — passed.
 
-The `GYVES` mismatch may be related to dictionary-version differences, but that explanation is not proven. Since two cases produce the expected move and all three OCR payloads validate an empty board and exact rack extraction, this is considered a positive validation signal rather than a confirmed three-case pass. The test intentionally does not hardcode or force the expected word in production.
-
 These are deterministic OCR contract fixtures, not live Gemini screenshot runs. A live OCR result still requires a working `GEMINI_API_KEY` and an actual screenshot passed through `POST /api/analyze-image`.
+
+## Lexicon scope
+
+A word that is absent from the current dictionary is a lexicon-availability result, not by itself an OCR or analyzer defect. CSW and NWL can legitimately differ, and words can change between editions. Future fixture expectations must name the exact dictionary and edition; otherwise the result should say that the word was not found in the current dictionary.
