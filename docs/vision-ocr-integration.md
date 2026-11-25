@@ -6,9 +6,10 @@
 
 ## Status
 
-The active plan is the free browser-based extraction path. The current scope is
-basic still-image extraction; board-state confirmation, confidence scoring, and
-high-accuracy local OCR are intentionally deferred.
+The active plan is a free browser pipeline using Canvas preprocessing and
+Tesseract.js. The first prototype failed because it OCR'd premium labels and
+misread rack tiles. The revised plan fixes cell selection before adding more
+OCR complexity.
 
 ## Product decisions
 
@@ -39,9 +40,9 @@ needs structured board coordinates and rack letters.
 
 ## Proposed solution: free browser extraction
 
-Accept a JPG, PNG, or WEBP image in the browser, perform lightweight image
-preparation and OCR on the user's device, and produce strict JSON matching the
-application contract:
+Accept a JPG, PNG, or WEBP image in the browser, use Canvas to isolate the
+board and rack tiles, run Tesseract.js only on likely letter tiles, and produce
+strict JSON matching the application contract:
 
 ```json
 {
@@ -148,20 +149,21 @@ Structured output should be validated against the application's board and rack r
 
 The work should be delivered in gated phases:
 
-1. **Extraction contract** — define `{ board, rack }`, coordinate rules, and
-   validation independent of the extraction mechanism.
-2. **Browser extraction spike** — prove lightweight image preparation, grid
-   detection, and OCR on representative screenshots.
-3. **Upload and response integration** — connect browser extraction to the
-   existing processing flow, expose the JSON, and retain move analysis.
+1. **Cell isolation** — use Canvas to locate the square board, divide it into
+   15×15 cells, separate premium/empty cells from letter tiles, and split the
+   seven rack tiles.
+2. **OCR extraction** — run Tesseract.js only on isolated letter tiles and
+   return validated zero-based JSON.
+3. **Upload and response integration** — connect extraction to the existing
+   processing flow and retain move analysis.
 4. **Fixture and quality validation** — add representative image fixtures,
    test coordinate and rack extraction, reject malformed or incomplete output,
    and measure latency and failure modes.
 5. **Accuracy gate** — accept results only when the extractor meets the agreed
    accuracy target on representative images. Do not add manual correction to
    compensate for poor extraction.
-6. **Optimization and fallback** — only if evaluation shows a need, improve
-   preprocessing or add OpenCV/PaddleOCR behind the same abstraction.
+6. **Optional preprocessing** — add OpenCV.js only if phone-photo tests need
+   perspective correction; do not add it by default.
 
 Each phase should leave the application buildable and should not broaden the
 scope into continuous camera scanning or automatic gameplay.
