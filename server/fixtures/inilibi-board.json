@@ -1,0 +1,56 @@
+{
+  "board": {
+    "cols": "A-O",
+    "rows": "1-15"
+  },
+  "last_active_word": {
+    "word": "EMOTEST",
+    "direction": "down",
+    "points": 20,
+    "tiles": [
+      { "coord": "F6", "letter": "E" },
+      { "coord": "F7", "letter": "M" },
+      { "coord": "F8", "letter": "O" },
+      { "coord": "F9", "letter": "T" },
+      { "coord": "F10", "letter": "E" },
+      { "coord": "F11", "letter": "S" },
+      { "coord": "F12", "letter": "T" }
+    ]
+  },
+  "words": [],
+  "occupied_tiles": {
+    "F3": "P",
+    "G3": "E",
+    "H3": "A",
+    "I3": "G",
+    "A4": "Z",
+    "B4": "A",
+    "C4": "G",
+    "H4": "V",
+    "I4": "I",
+    "J4": "N",
+    "K4": "O",
+    "L4": "S",
+    "D5": "U",
+    "E5": "N",
+    "F5": "R",
+    "G5": "E",
+    "H5": "I",
+    "I5": "N",
+    "J5": "E",
+    "K5": "D",
+    "F6": "E",
+    "F7": "M",
+    "F8": "O",
+    "F9": "T",
+    "F10": "E",
+    "F11": "S",
+    "F12": "T"
+  },
+  "rack": ["I", "N", "I", "L", "I", "B", "I"],
+  "user_suggested_best_move": {
+    "type": "tile_swap",
+    "tiles": ["I", "N", "I", "I"],
+    "reason": "Fishing for A and C to hook ORE for ALBICORE or another bingo with an ORE suffix; the rack is clunky with too many I tiles."
+  }
+}
